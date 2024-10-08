@@ -17,18 +17,7 @@
 </head>
 <body>
 	<div id="page">
-		<div id="header">
-			<div>
-				<a href="index.html"><img src="images/logo.gif" alt="Logo" /></a>
-			</div>
-			<ul>
-				<li class="first"><a href="index.html">Home</a></li>
-				<li><a href="recipes.html">Recipes</a></li>
-				<li><a href="about.html">About us</a></li>
-				<li><a href="blog.html">Blog</a></li>
-				<li class="last select"><a href="contact.html">Contact Us</a></li>
-			</ul>
-		</div>
+		<%- include('../partials/header') %>
 		<div id="content">
 			<div>
 				<div class="aside">
@@ -62,27 +51,7 @@
 				</div>
 			</div>
 		</div>
-		<div id="footer">
-			<div>
-				<div>
-					<div>
-						<div class="first">
-							<h3>Newsletter</h3>
-							<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet. Dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea. <a class="more" href="index.html">Read more</a></p>
-						</div>
-						<div>
-							<h3>Latest Added Recipes</h3>
-							<p>Lorem ipsum dolor sit amet, <br />Consectetur adipiscin <br />Nullam euismod varius <br />Elementum <br />Suspendisse potenti</p>
-						</div>
-						<div>
-							<h3>Popular Recipes</h3>
-							<p>Lorem ipsum dolor sit amet, <br />Consectetur adipiscin <br />Nullam euismod varius <br />Elementum <br />Suspendisse potenti</p>
-						</div>
-					</div>
-				</div>
-				<p class="footnote">&copy; 2011 Healthy Life. All Rights Reserved.</p>
-			</div>
-		</div>
+		<%- include('../partials/footer') %>
 	</div>	
 </body>
 </html>

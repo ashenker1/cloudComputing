@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Meal Update - HealthyLife</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+	<!--[if IE 9]>
+		<link rel="stylesheet" type="text/css" href="css/ie9.css" />
+	<![endif]-->
+	<!--[if IE 7]>
+		<link rel="stylesheet" type="text/css" href="css/ie7.css" />
+	<![endif]-->
+	<!--[if IE 6]>
+		<link rel="stylesheet" type="text/css" href="css/ie6.css" />
+	<![endif]-->
+</head>
+<body>
+    <div id="page">
+        <%- include('../partials/header') %>
+        <div id="content">
+            <div>
+                <div>
+                    <h1>Meal Update</h1>
+                    <p>Welcome to our Meal Update page! Here you can add, update, or remove meals you've consumed throughout the day.</p>
+                    <p>Maintaining a proper and organized diet is the key to good health. We are here to make the process easier for you!</p>
+                    
+                    <form action="/update-meal" method="POST">
+                        <label for="meal-name">Meal Name:</label>
+                        <input type="text" id="meal-name" name="mealName" required placeholder="Enter the name of your meal...">
+                        
+                        <label for="meal-calories">Calories:</label>
+                        <input type="number" id="meal-calories" name="mealCalories" required placeholder="Enter the number of calories">
+                        
+                        <label for="meal-type">Meal Type:</label>
+                        <select id="meal-type" name="mealType" required>
+                            <option value="breakfast">Breakfast</option>
+                            <option value="lunch">Lunch</option>
+                            <option value="dinner">Dinner</option>
+                            <option value="snack">Snack</option>
+                        </select>
+                        
+                        <input type="submit" value="Update Meal" class="submit-button">
+                    </form>
+
+                    <p>If you have any further questions or need assistance, don't hesitate to reach out. We are here for you!</p>
+                </div>
+            </div>
+        </div>
+        <%- include('../partials/footer') %>
+    </div>  
+</body>
+</html>
