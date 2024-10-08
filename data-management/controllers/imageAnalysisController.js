@@ -1,21 +1,34 @@
-const imageAnalysisModel = require('../models/imageAnalysisModel');
+const express = require('express');
+const multer = require('multer');
+const imageAnalysisModel = require('../models/imageAnalysisModel');  // ייבוא המודל של ניתוח תמונה
 
-// Controller to analyze an image and verify if it's a food item
-async function analyzeImage(req, res) {
+const router = express.Router();
+
+// הגדרת אחסון התמונה באמצעות multer
+const storage = multer.memoryStorage(); // לאחסן את התמונה בזיכרון
+const upload = multer({ storage: storage });
+
+// פונקציה שמקבלת את התמונה ומבצע את הניתוח שלה
+router.post('/upload-image', upload.single('image'), async (req, res) => {
   try {
-    const { imageUrl } = req.body; // Incoming image URL for analysis
-    const result = await imageAnalysisModel.analyzeImage(imageUrl);
-    if (result.isFood) {
-      res.json({ message: 'Image verified as a food item', result });
-    } else {
-      res.status(400).json({ message: 'The image is not recognized as a food item' });
+    if (!req.file) {
+      return res.status(400).send({ message: 'No image file uploaded' });
     }
-  } catch (err) {
-    console.error('Error analyzing image:', err);
-    res.status(500).send('Server Error');
-  }
-}
 
-module.exports = {
-  analyzeImage,
-};
+    // שליחה למודל לניתוח התמונה
+    const analysisResults = await imageAnalysisModel.sendImageForAnalysis(req.file.buffer);
+
+    // בדיקה אם התמונה היא של מאכל
+    const foodDetected = imageAnalysisModel.isFoodItem(analysisResults);
+
+    if (foodDetected) {
+      return res.status(200).send({ message: 'Image is a food item' });
+    } else {
+      return res.status(400).send({ message: 'Image is not recognized as a food item' });
+    }
+  } catch (error) {
+    return res.status(500).send({ message: 'Error processing the image', error: error.message });
+  }
+});
+
+module.exports = router;

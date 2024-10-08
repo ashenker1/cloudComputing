@@ -1,69 +1,87 @@
-const userModel = require('../models/userModel');
+const db = require('../config');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const userModel = require('../models/userModel');  // יש לוודא שהמודל בשם הזה
 
-// Controller to create a new user
-async function createUser(req, res) {
+// יצירת משתמש חדש (Create)
+const createUser = async (req, res) => {
+  const { id, username, password, email } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10); // הצפנת הסיסמה
   try {
-    const { username, password, email } = req.body;
-    const result = await userModel.createUser(username, password, email);
+    await userModel.createUser(id, username, hashedPassword, email);
     res.status(201).json({ message: 'User created successfully' });
   } catch (err) {
-    console.error('Error creating user:', err);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Error creating user', error: err });
   }
-}
+};
 
-// Controller to get all users
-async function getAllUsers(req, res) {
+// קבלת פרטי משתמש לפי מזהה (Read)
+const getUser = async (req, res) => {
+  const { userId } = req.params;
   try {
-    const users = await userModel.getAllUsers();
-    res.json(users);
+    const user = await userModel.getUserById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.status(200).json(user);
   } catch (err) {
-    console.error('Error fetching users:', err);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Error fetching user', error: err });
   }
-}
+};
 
-// Controller to get user by ID
-async function getUserById(req, res) {
+// קבלת כל המשתמשים (Read all users)
+const getAllUsers = async (req, res) => {
   try {
-    const { id } = req.params;
-    const user = await userModel.getUserById(id);
-    res.json(user);
+    const users = await userModel.getUserByUsername();
+    res.status(200).json(users);
   } catch (err) {
-    console.error('Error fetching user by ID:', err);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Error fetching users', error: err });
   }
-}
+};
 
-// Controller to update a user
-async function updateUser(req, res) {
+// עדכון פרטי משתמש (Update)
+const updateUser = async (req, res) => {
+  const { userId, username, password, email } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10); // הצפנת הסיסמה החדשה
   try {
-    const { id } = req.params;
-    const { username, password, email } = req.body;
-    await userModel.updateUser(id, username, password, email);
+    await userModel.updateUser(userId, username, hashedPassword, email);
     res.status(200).json({ message: 'User updated successfully' });
   } catch (err) {
-    console.error('Error updating user:', err);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Error updating user', error: err });
   }
-}
+};
 
-// Controller to delete a user
-async function deleteUser(req, res) {
+// מחיקת משתמש (Delete)
+const deleteUser = async (req, res) => {
+  const { userId } = req.params;
   try {
-    const { id } = req.params;
-    await userModel.deleteUser(id);
+    await userModel.deleteUser(userId);
     res.status(200).json({ message: 'User deleted successfully' });
   } catch (err) {
-    console.error('Error deleting user:', err);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Error deleting user', error: err });
   }
-}
+};
+
+// הזדהות משתמש (Login)
+const login = async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await userModel.getUserByUsername(username);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(401).json({ message: 'Incorrect password' });
+
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.status(200).json({ token });
+  } catch (err) {
+    res.status(500).json({ message: 'Error logging in', error: err });
+  }
+};
 
 module.exports = {
   createUser,
+  getUser,
   getAllUsers,
-  getUserById,
   updateUser,
   deleteUser,
+  login
 };

@@ -1,69 +1,52 @@
-const mealModel = require('../models/mealModel');
+// mealController.js
+const db = require('../config');
 
-// Controller to create a new meal
-async function createMeal(req, res) {
+const addMeal = async (req, res) => {
+  const { mealType, description, sugarLevel, imageUrl, isHoliday } = req.body;
   try {
-    const { date, description, imageUrl, sugarLevel, mealType, holiday } = req.body;
-    const result = await mealModel.createMeal(date, description, imageUrl, sugarLevel, mealType, holiday);
-    res.status(201).json({ message: 'Meal created successfully' });
+    await db.query('INSERT INTO Meals (mealType, description, sugarLevel, imageUrl, isHoliday) VALUES (@mealType, @description, @sugarLevel, @imageUrl, @isHoliday)', {
+      mealType, description, sugarLevel, imageUrl, isHoliday
+    });
+    res.status(201).json({ message: 'Meal added successfully' });
   } catch (err) {
-    console.error('Error creating meal:', err);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Error adding meal', error: err });
   }
-}
+};
 
-// Controller to get all meals
-async function getAllMeals(req, res) {
+const updateMeal = async (req, res) => {
+  const { mealId, mealType, description, sugarLevel, imageUrl, isHoliday } = req.body;
   try {
-    const meals = await mealModel.getAllMeals();
-    res.json(meals);
-  } catch (err) {
-    console.error('Error fetching meals:', err);
-    res.status(500).send('Server Error');
-  }
-}
-
-// Controller to get meal by ID
-async function getMealById(req, res) {
-  try {
-    const { id } = req.params;
-    const meal = await mealModel.getMealById(id);
-    res.json(meal);
-  } catch (err) {
-    console.error('Error fetching meal by ID:', err);
-    res.status(500).send('Server Error');
-  }
-}
-
-// Controller to update a meal
-async function updateMeal(req, res) {
-  try {
-    const { id } = req.params;
-    const { date, description, imageUrl, sugarLevel, mealType, holiday } = req.body;
-    await mealModel.updateMeal(id, date, description, imageUrl, sugarLevel, mealType, holiday);
+    await db.query('UPDATE Meals SET mealType = @mealType, description = @description, sugarLevel = @sugarLevel, imageUrl = @imageUrl, isHoliday = @isHoliday WHERE id = @mealId', {
+      mealId, mealType, description, sugarLevel, imageUrl, isHoliday
+    });
     res.status(200).json({ message: 'Meal updated successfully' });
   } catch (err) {
-    console.error('Error updating meal:', err);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Error updating meal', error: err });
   }
-}
+};
 
-// Controller to delete a meal
-async function deleteMeal(req, res) {
+const deleteMeal = async (req, res) => {
+  const { mealId } = req.params;
   try {
-    const { id } = req.params;
-    await mealModel.deleteMeal(id);
+    await db.query('DELETE FROM Meals WHERE id = @mealId', { mealId });
     res.status(200).json({ message: 'Meal deleted successfully' });
   } catch (err) {
-    console.error('Error deleting meal:', err);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Error deleting meal', error: err });
   }
-}
+};
+
+const getMeals = async (req, res) => {
+  try {
+    const meals = await db.query('SELECT * FROM Meals');
+    res.status(200).json(meals);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching meals', error: err });
+  }
+};
 
 module.exports = {
-  createMeal,
-  getAllMeals,
-  getMealById,
+  addMeal,
   updateMeal,
   deleteMeal,
+  getMeals
 };

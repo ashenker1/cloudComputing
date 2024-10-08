@@ -1,30 +1,16 @@
-const historicalDataModel = require('../models/historicalDataModel');
+// historyController.js
+const db = require('../config');
 
-// Controller to get historical data for a user
-async function getHistoricalData(req, res) {
+const getMealHistory = async (req, res) => {
+  const { fromDate, toDate } = req.query;
   try {
-    const { userId, startDate, endDate } = req.query; // Query parameters for date range
-    const historicalData = await historicalDataModel.getHistoricalData(userId, startDate, endDate);
-    res.json(historicalData);
+    const meals = await db.query('SELECT * FROM Meals WHERE mealDate BETWEEN @fromDate AND @toDate', { fromDate, toDate });
+    res.status(200).json(meals);
   } catch (err) {
-    console.error('Error fetching historical data:', err);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: 'Error fetching meal history', error: err });
   }
-}
-
-// Controller to predict blood sugar level based on meal, day, and image
-async function predictBloodSugar(req, res) {
-  try {
-    const { mealType, day, imageUrl } = req.body; // Incoming data for prediction
-    const prediction = await historicalDataModel.predictBloodSugar(mealType, day, imageUrl);
-    res.json(prediction);
-  } catch (err) {
-    console.error('Error predicting blood sugar:', err);
-    res.status(500).send('Server Error');
-  }
-}
+};
 
 module.exports = {
-  getHistoricalData,
-  predictBloodSugar,
+  getMealHistory
 };
