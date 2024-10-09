@@ -1,52 +1,167 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>Meal Update - HealthyLife</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
-	<!--[if IE 9]>
-		<link rel="stylesheet" type="text/css" href="css/ie9.css" />
-	<![endif]-->
-	<!--[if IE 7]>
-		<link rel="stylesheet" type="text/css" href="css/ie7.css" />
-	<![endif]-->
-	<!--[if IE 6]>
-		<link rel="stylesheet" type="text/css" href="css/ie6.css" />
-	<![endif]-->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Meal</title>
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+    }
+
+    #content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      margin: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #d5006d;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+      font-size: 14px;
+      margin-bottom: 10px;
+      transition: border 0.3s;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="date"]:focus,
+    textarea:focus {
+      border: 1px solid #d5006d;
+    }
+
+    textarea {
+      resize: none;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 10px;
+    }
+
+    button {
+      width: auto;
+      padding: 10px 20px;
+      background-color: #d5006d;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+      display: block;
+      margin: 20px 0 0 0;
+    }
+
+    button:hover {
+      background-color: #b0004d;
+    }
+
+    .form-group-inline {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .form-group-inline div {
+      width: 48%;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: flex-start;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-    <div id="page">
-        <%- include('../partials/header') %>
-        <div id="content">
-            <div>
-                <div>
-                    <h1>Meal Update</h1>
-                    <p>Welcome to our Meal Update page! Here you can add, update, or remove meals you've consumed throughout the day.</p>
-                    <p>Maintaining a proper and organized diet is the key to good health. We are here to make the process easier for you!</p>
-                    
-                    <form action="/update-meal" method="POST">
-                        <label for="meal-name">Meal Name:</label>
-                        <input type="text" id="meal-name" name="mealName" required placeholder="Enter the name of your meal...">
-                        
-                        <label for="meal-calories">Calories:</label>
-                        <input type="number" id="meal-calories" name="mealCalories" required placeholder="Enter the number of calories">
-                        
-                        <label for="meal-type">Meal Type:</label>
-                        <select id="meal-type" name="mealType" required>
-                            <option value="breakfast">Breakfast</option>
-                            <option value="lunch">Lunch</option>
-                            <option value="dinner">Dinner</option>
-                            <option value="snack">Snack</option>
-                        </select>
-                        
-                        <input type="submit" value="Update Meal" class="submit-button">
-                    </form>
+  <div id="page">
+    <%- include('../partials/header'); %>
+    
+    <div id="content">
+      <div class="container">
+        <h2>Add New Meal</h2>
+        <form id="mealForm" action="/meals/add" method="POST">
+          <div class="form-group">
+            <label for="mealName">Name:</label>
+            <input type="text" id="mealName" name="mealName" required>
+          </div>
 
-                    <p>If you have any further questions or need assistance, don't hesitate to reach out. We are here for you!</p>
-                </div>
+          <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" rows="3" required></textarea>
+          </div>
+
+          <div class="form-group-inline">
+            <div>
+              <label for="date">Date:</label>
+              <input type="date" id="date" name="date">
             </div>
-        </div>
-        <%- include('../partials/footer') %>
-    </div>  
+
+            <div>
+              <label for="sugarLevel">Sugar Level (mg/dL):</label>
+              <input type="number" id="sugarLevel" name="sugarLevel" min="0" step="0.1" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="imageUrl">Image URL:</label>
+            <input type="text" id="imageUrl" name="imageUrl">
+          </div>
+
+          <div class="form-group">
+            <input type="checkbox" id="isHoliday" name="isHoliday">
+            <label for="isHoliday">Is this a holiday meal?</label>
+          </div>
+
+          <div class="button-container">
+            <button type="submit">Add Meal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <%- include('../partials/footer'); %>
+  </div>
+
+  <script>
+    // Set today's date automatically in the date field
+    document.getElementById('date').value = new Date().toISOString().split('T')[0];
+  </script>
 </body>
 </html>
