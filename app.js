@@ -2,8 +2,17 @@ const express = require("express");
 const app = express();
 const port = 3000;
 
+// Middleware
 app.use(express.static("public"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// View engine
 app.set("view engine", "ejs");
+
+// Routes
+const userRoutes = require("./routes/userRoutes"); // Import user routes
+app.use("/users", userRoutes); // All user-related routes will be prefixed with /users
 
 app.get("/", (req, res) => {
   res.render("pages/index");
@@ -25,12 +34,14 @@ app.get("/recipes", (req, res) => {
   res.render("pages/recipes");
 });
 
-app.get("/index", (req, res) => {
-  res.render("pages/index");
-});
-
 app.get("/updateMeals", (req, res) => {
   res.render("pages/updateMeals");
+});
+
+// Error handling
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
 });
 
 app.listen(port, () => {
