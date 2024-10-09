@@ -22,8 +22,8 @@ app.get("/about", (req, res) => {
   res.render("pages/about");
 });
 
-app.get("/blog", (req, res) => {
-  res.render("pages/blog");
+app.get("/mealHistory", (req, res) => {
+  res.render("pages/mealHistory");
 });
 
 app.get("/contact", (req, res) => {
