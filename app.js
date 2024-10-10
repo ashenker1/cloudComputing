@@ -2,6 +2,14 @@ const express = require("express");
 const app = express();
 const port = 3000;
 
+
+const mealRoutes = require('./routes/mealRoutes'); // עדכן לפי המיקום המדויק שלך
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// כולל את הראוטס שלך
+app.use('/meals', mealRoutes);
+
 app.use(express.static("public"));
 app.set("view engine", "ejs");
 
