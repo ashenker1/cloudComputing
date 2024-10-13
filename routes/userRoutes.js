@@ -17,25 +17,10 @@ router.put("/update", userController.updateUser);
 // מחיקת משתמש
 router.delete("/:userId", userController.deleteUser);
 
-/*
 // הזדהות משתמש
 router.post("/login", userController.login);
-*/
 
-// הזדהות משתמש
-router.post("/login", (req, res) => {
-  const { username, password } = req.body;
-
-  // בדיקת נתונים
-  if (!username || !password) {
-    return res.status(400).send("Username and password are required.");
-  }
-
-  // קריאה לפונקציה של userController
-  userController.login(req, res);
-});
-
-//יצירת מסלול לדשבורד
+// יצירת מסלול לדשבורד
 router.get("/dashboard", (req, res) => {
   res.render("pages/dashboard");
 });

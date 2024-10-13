@@ -1,7 +1,15 @@
 const db = require("../config");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // פונקציה ליצירת משתמש חדש
-const createUser = async (id, username, hashedPassword, email) => {
+const createUser = async (id, username, password, email) => {
+  const existingUser = await getUserByUsername(username);
+  if (existingUser) {
+    throw { status: 409, message: "User already exists" };
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
   return db.query(
     "INSERT INTO Users (id, username, password, email) VALUES (@id, @username, @password, @email)",
     {
@@ -26,7 +34,8 @@ const getUserByUsername = async (username) => {
 };
 
 // פונקציה לעדכון פרטי משתמש
-const updateUser = async (userId, username, hashedPassword, email) => {
+const updateUser = async (userId, username, password, email) => {
+  const hashedPassword = await bcrypt.hash(password, 10);
   return db.query(
     "UPDATE Users SET username = @username, password = @password, email = @email WHERE id = @userId",
     {
@@ -43,9 +52,27 @@ const deleteUser = async (userId) => {
   return db.query("DELETE FROM Users WHERE id = @userId", { userId });
 };
 
-// הוספת פונקציה ב-userModel לקבלת כל המשתמשים
+// פונקציה לקבלת כל המשתמשים
 const getAllUsers = async () => {
   return db.query("SELECT * FROM Users");
+};
+
+// פונקציה להזדהות משתמש
+const login = async (username, password) => {
+  const user = await getUserByUsername(username);
+  if (!user) {
+    throw { status: 401, message: "Invalid username or password" };
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw { status: 401, message: "Invalid username or password" };
+  }
+
+  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
+  return token; // החזר את הטוקן
 };
 
 module.exports = {
@@ -55,4 +82,5 @@ module.exports = {
   updateUser,
   deleteUser,
   getAllUsers,
+  login,
 };
