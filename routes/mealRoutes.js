@@ -5,13 +5,7 @@ const router = express.Router();
 // יצירת ארוחה חדשה
 router.post('/add', mealController.addMeal);
 
-// עדכון פרטי ארוחה קיימת
-router.put('/update', mealController.updateMeal);
-
-// מחיקת ארוחה לפי מזהה
-router.delete('/:mealId', mealController.deleteMeal);
-
-// קבלת כל הארוחות
-router.get('/', mealController.getMeals);
+// קבלת היסטוריה של ארוחות
+router.get('/history', mealController.getMealHistory); // הוספת הנתיב להיסטוריה
 
 module.exports = router;

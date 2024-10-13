@@ -72,10 +72,6 @@
       resize: none;
     }
 
-    input[type="checkbox"] {
-      margin-right: 10px;
-    }
-
     button {
       width: auto;
       padding: 10px 20px;
@@ -94,16 +90,6 @@
       background-color: #b0004d;
     }
 
-    .form-group-inline {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 15px;
-    }
-
-    .form-group-inline div {
-      width: 48%;
-    }
-
     .button-container {
       display: flex;
       justify-content: flex-start;
@@ -118,7 +104,7 @@
     <div id="content">
       <div class="container">
         <h2>Add New Meal</h2>
-        <form id="mealForm" action="/meals/add" method="POST">
+        <form id="mealForm">
           <div class="form-group">
             <label for="mealType">Meal Type:</label>
             <select id="mealType" name="mealType" required>
@@ -162,7 +148,36 @@
   </div>
 
   <script>
-    // אין צורך בקוד לקביעת תאריך אוטומטי כי זה לא רלוונטי
+    document.getElementById('mealForm').addEventListener('submit', async (event) => {
+        event.preventDefault(); // מונע את ברירת המחדל של שליחת הטופס
+
+        const formData = new FormData(event.target); // קבלת נתוני הטופס
+        const mealData = Object.fromEntries(formData); // המרת הנתונים לאובייקט
+
+        try {
+            const response = await fetch('/meals/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(mealData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const jsonResponse = await response.json(); // הנחה שהשרת מחזיר את ההודעה בפורמט JSON
+
+            // מציג את הודעת ההצלחה
+            alert(jsonResponse.message); // מראה את ההודעה
+
+        } catch (error) {
+            console.error('Error adding meal:', error);
+            // מציג הודעת שגיאה בחלון קופץ
+            alert('Failed to add meal: ' + error.message);
+        }
+    });
   </script>
 </body>
 </html>
