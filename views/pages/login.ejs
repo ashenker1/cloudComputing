@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="he">
+  <head>
+    <meta charset="UTF-8" />
+    <title>כניסה</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* סגנונות עבור ה-Modal */
+      .modal {
+        display: none; /* ה-Modal לא יוצג על ידי ברירת מחדל */
+        position: fixed;
+        z-index: 1; /* מוודא שה-Modal יופיע מעל לתוכן אחר */
+        left: 0;
+        top: 0;
+        width: 100%; /* רוחב המודל */
+        height: 100%; /* גובה המודל */
+        overflow: auto; /* מוסיף גלילה אם יש צורך */
+        background-color: rgba(0, 0, 0, 0.4); /* צבע שקוף */
+      }
+
+      .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 250px; /* Make the width smaller */
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loginContainer" style="max-width: 400px; margin: auto">
+      <h2>כניסה למערכת</h2>
+      <button id="loginBtn">פתח חלון התחברות</button>
+      <!-- כפתור לפתיחת ה-Modal -->
+
+      <!-- Modal for Login -->
+      <div id="loginModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <form id="loginForm" action="/users/login" method="POST">
+            <label for="username">שם משתמש:</label>
+            <input type="text" id="username" name="username" required />
+
+            <label for="password">סיסמה:</label>
+            <input type="password" id="password" name="password" required />
+
+            <button type="submit">כניסה</button>
+            <div id="errorMessage" style="color: red"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // JavaScript להפעלת ה-Modal
+      var modal = document.getElementById("loginModal");
+      var btn = document.getElementById("loginBtn");
+      var span = document.getElementsByClassName("close")[0];
+
+      // כאשר לוחצים על כפתור ההתחברות, פתח את ה-Modal
+      btn.onclick = function () {
+        modal.style.display = "block";
+      };
+
+      // כאשר לוחצים על ה-X, סגור את ה-Modal
+      span.onclick = function () {
+        modal.style.display = "none";
+      };
+
+      // כאשר לוחצים מחוץ ל-Modal, סגור אותו
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+    </script>
+
+    <script src="/login.js"></script>
+    <script src="/main.js"></script>
+    <!-- חיבור לקובץ JavaScript -->
+  </body>
+</html>

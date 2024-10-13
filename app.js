@@ -2,18 +2,19 @@ const express = require("express");
 const app = express();
 const port = 3000;
 
-// Middleware
-app.use(express.static("public"));
+const mealRoutes = require("./routes/mealRoutes"); // עדכן לפי המיקום המדויק שלך
+const userRoutes = require("./routes/userRoutes"); // כולל את הראוט של המשתמשים
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public")); // שירות קבצים סטטיים
+app.set("view engine", "ejs"); // הגדרת EJS כתבנית
 
-// View engine
-app.set("view engine", "ejs");
+// כולל את הראוטס שלך
+app.use("/meals", mealRoutes);
+app.use("/users", userRoutes); // חיבור הראוטים של המשתמשים
 
-// Routes
-const userRoutes = require("./routes/userRoutes"); // Import user routes
-app.use("/users", userRoutes); // All user-related routes will be prefixed with /users
-
+// דפים
 app.get("/", (req, res) => {
   res.render("pages/index");
 });
@@ -34,14 +35,12 @@ app.get("/recipes", (req, res) => {
   res.render("pages/recipes");
 });
 
-app.get("/updateMeals", (req, res) => {
-  res.render("pages/updateMeals");
+app.get("/index", (req, res) => {
+  res.render("pages/index");
 });
 
-// Error handling
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send("Something broke!");
+app.get("/updateMeals", (req, res) => {
+  res.render("pages/updateMeals");
 });
 
 app.listen(port, () => {
