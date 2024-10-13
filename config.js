@@ -1,1 +1,14 @@
-"workstation id=DietaryHabitsDB.mssql.somee.com;packet size=4096;user id=aabikel_SQLLogin_1;pwd=4frb3e6qgq;data source=DietaryHabitsDB.mssql.somee.com;persist security info=False;initial catalog=DietaryHabitsDB;TrustServerCertificate=True"
+// config.js
+const config = {
+    server: 'DietaryHabitsDB.mssql.somee.com', // שם השרת
+    database: 'DietaryHabitsDB', // שם מסד הנתונים
+    user: 'aabikel_SQLLogin_1', // שם המשתמש
+    password: '4frb3e6qgq', // סיסמה
+    options: {
+      encrypt: true, // אם אתה משתמש ב-SSL
+      trustServerCertificate: true // אם אתה בודק את תעודת השרת
+    }
+  };
+  
+  module.exports = config;
+  
