@@ -18,7 +18,7 @@ router.put("/update", userController.updateUser);
 router.delete("/:userId", userController.deleteUser);
 
 // הזדהות משתמש
-router.post("/login", userController.login);
+router.post('/login', userController.login);
 
 // יצירת מסלול לדשבורד
 router.get("/dashboard", (req, res) => {
