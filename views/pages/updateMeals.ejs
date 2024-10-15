@@ -133,7 +133,7 @@
 
             <div>
               <label for="bloodSugar">Blood Sugar (mg/dL):</label>
-              <input type="number" id="bloodSugar" name="bloodSugar" min="0" step="0.1">
+              <input type="number" id="bloodSugar" name="bloodSugar" min="0" step="1">
             </div>
           </div>
 
@@ -149,35 +149,56 @@
 
   <script>
     document.getElementById('mealForm').addEventListener('submit', async (event) => {
-        event.preventDefault(); // מונע את ברירת המחדל של שליחת הטופס
+      event.preventDefault(); // מונע את ברירת המחדל של שליחת הטופס
 
-        const formData = new FormData(event.target); // קבלת נתוני הטופס
-        const mealData = Object.fromEntries(formData); // המרת הנתונים לאובייקט
+      const formData = new FormData(event.target); // קבלת נתוני הטופס
+      const mealData = Object.fromEntries(formData); // המרת הנתונים לאובייקט
 
-        try {
-            const response = await fetch('/meals/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(mealData),
-            });
+      // כאן נוסיף בדיקה האם התמונה תקינה לפני שליחה
+      const isImageValid = await validateImage(mealData.image); // בדיקה אם התמונה תקינה
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+      if (!isImageValid) {
+          alert('The image is not valid. Please upload a valid food image.');
+          return; // לא נמשיך לשלוח את הנתונים
+      }
 
-            const jsonResponse = await response.json(); // הנחה שהשרת מחזיר את ההודעה בפורמט JSON
+      try {
+        const response = await fetch('/meals/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(mealData),
+        });
 
-            // מציג את הודעת ההצלחה
-            alert(jsonResponse.message); // מראה את ההודעה
-
-        } catch (error) {
-            console.error('Error adding meal:', error);
-            // מציג הודעת שגיאה בחלון קופץ
-            alert('Failed to add meal: ' + error.message);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
         }
+
+        const jsonResponse = await response.json(); // הנחה שהשרת מחזיר את ההודעה בפורמט JSON
+
+        // מציג את הודעת ההצלחה
+        alert(jsonResponse.message); // מראה את ההודעה
+
+        // מחיקת התוכן של הטופס אחרי הצלחה בלבד
+        event.target.reset();
+
+      } catch (error) {
+        console.error('Error adding meal:', error);
+        // מציג הודעת שגיאה בחלון קופץ
+        alert('Failed to add meal: ' + error.message);
+      }
     });
+
+    // פונקציה לבדוק אם התמונה תקינה
+    async function validateImage(imageUrl) {
+      // הוספת לוגיקה לבדוק אם התמונה היא של אוכל
+      // כאן תוכל להוסיף את הלוגיקה שלך לבדוק אם התמונה מתאימה
+      // לדוגמה, יכול להיות שתרצה לבדוק אם התמונה מקושרת לאתר מסויים או שהיא נראית בסגנון מסויים
+
+      // לדוגמה, פשוט נחזיר true כדי לדמות שהכל תקין
+      return true; // החלף בלוגיקה שלך
+    }
   </script>
 </body>
 </html>
