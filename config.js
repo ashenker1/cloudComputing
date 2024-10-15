@@ -49,4 +49,5 @@ module.exports = {
   config,
   sql,
   db,
+  poolPromise,
 };

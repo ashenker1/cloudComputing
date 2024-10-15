@@ -1,4 +1,5 @@
 const userModel = require("../models/userModel");
+const jwt = require("jsonwebtoken"); // ייבוא jsonwebtoken
 
 // יצירת משתמש חדש (Create)
 const createUser = async (req, res) => {
@@ -67,6 +68,10 @@ const login = async (req, res) => {
   try {
     const { username, password } = req.body;
     const token = await userModel.login(username, password);
+
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET); // פענוח הטוקן
+    req.session.userId = decodedToken.userId; // שליפת ה-userId מתוך הטוקן ושמירה ב-session
+
     req.session.token = token; // שמירת הטוקן ב-session
     req.session.isLoggedIn = true; // שמירת מצב ההתחברות ב-session
     req.session.username = username; // שמירת שם המשתמש ב-session (אם צריך)
