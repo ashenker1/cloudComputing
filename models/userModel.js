@@ -1,9 +1,10 @@
-const db = require("../config");
+const { db } = require("../config");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 // פונקציה ליצירת משתמש חדש
 const createUser = async (id, username, password, email) => {
+  console.log(id, username, password, email);
   const existingUser = await getUserByUsername(username);
   if (existingUser) {
     throw { status: 409, message: "User already exists" };
@@ -28,9 +29,17 @@ const getUserById = async (userId) => {
 
 // פונקציה לקבלת משתמש לפי שם משתמש
 const getUserByUsername = async (username) => {
-  return db.query("SELECT * FROM Users WHERE username = @username", {
-    username,
-  });
+  try {
+    const data = await db.query(
+      "SELECT * FROM Users WHERE username = @username",
+      {
+        username,
+      }
+    );
+    return data[0];
+  } catch (error) {
+    console.log("query error:", error);
+  }
 };
 
 // פונקציה לעדכון פרטי משתמש
@@ -57,22 +66,42 @@ const getAllUsers = async () => {
   return db.query("SELECT * FROM Users");
 };
 
-// פונקציה להזדהות משתמש
 const login = async (username, password) => {
-  const user = await getUserByUsername(username);
-  if (!user) {
-    throw { status: 401, message: "Invalid username or password" };
-  }
+  try {
+    console.log("step 1");
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    throw { status: 401, message: "Invalid username or password" };
-  }
+    const user = await getUserByUsername(username);
+    if (!user) {
+      console.log("User not found"); // לוג נוסף במקרה שהמשתמש לא נמצא
+      throw { status: 401, message: "Invalid username or password" };
+    }
 
-  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
-  });
-  return token; // החזר את הטוקן
+    console.log("step 2");
+    console.log(user);
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      console.log("Password does not match"); // לוג נוסף במקרה שהסיסמה לא תואמת
+      throw { status: 401, message: "Invalid username or password" };
+    }
+
+    console.log("step 3");
+
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    return token; // החזרת הטוקן
+  } catch (error) {
+    console.error("Error during login process:", error);
+
+    // הטיפול בשגיאות בהתאם לסוג השגיאה
+    if (error.status) {
+      throw error; // במקרה שזה שגיאה עם סטטוס מותאם (כמו Invalid username or password)
+    } else {
+      throw { status: 500, message: "Internal server error" }; // שגיאה כללית
+    }
+  }
 };
 
 module.exports = {

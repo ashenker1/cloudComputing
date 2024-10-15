@@ -1,3 +1,4 @@
+<% if (isLoggedIn) { %>
 <div id="header">
   <div>
     <a href="/index"><img src="images/logo.gif" alt="Logo" /></a>
@@ -7,7 +8,19 @@
     <li><a href="/recipes">Recipes</a></li>
     <li><a href="/about">About us</a></li>
     <li><a href="/mealHistory">Meal History</a></li>
-    <li><A href="/updateMeals">Add Meals</A></li>
+    <li><a href="/updateMeals">Add Meals</a></li>
     <li class="last"><a href="/contact">Contact Us</a></li>
   </ul>
 </div>
+<% } else { %>
+<div id="header">
+  <div>
+    <a href="/index"><img src="images/logo.gif" alt="Logo" /></a>
+  </div>
+  <ul>
+    <li class="first current"><a href="/index">Home</a></li>
+    <li><a href="/about">About us</a></li>
+    <li class="last"><a href="/contact">Contact Us</a></li>
+  </ul>
+</div>
+<% } %>

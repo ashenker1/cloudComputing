@@ -4,11 +4,18 @@ const userModel = require("../models/userModel");
 const createUser = async (req, res) => {
   const { id, username, password, email } = req.body;
 
+  if (!id || !username || !password || !email) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
   try {
     await userModel.createUser(id, username, password, email);
-    res.status(201).json({ message: "User created successfully" });
+
+    // הפנה עם הודעה בפרמטר
+    res.redirect("/?message=User created successfully");
   } catch (err) {
-    res.status(err.status || 500).json({ message: err.message });
+    // חזור לדף ההתחברות עם הודעת שגיאה
+    res.redirect("/signup?message=" + encodeURIComponent(err.message));
   }
 };
 
@@ -56,15 +63,19 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// הזדהות משתמש
 const login = async (req, res) => {
-  const { username, password } = req.body;
-
   try {
+    const { username, password } = req.body;
     const token = await userModel.login(username, password);
-    res.status(200).json({ message: "Login successful", token });
+    req.session.token = token; // שמירת הטוקן ב-session
+    req.session.isLoggedIn = true; // שמירת מצב ההתחברות ב-session
+    req.session.username = username; // שמירת שם המשתמש ב-session (אם צריך)
+
+    // העברת המצב של isLoggedIn והשם משתמש לדף התצוגה
+    res.render("pages/index", { isLoggedIn: true, username });
   } catch (err) {
-    res.status(err.status || 500).json({ message: err.message });
+    console.error(err);
+    res.render("pages/index", { isLoggedIn: false }); // במקרה של שגיאה, המשתמש לא מחובר
   }
 };
 

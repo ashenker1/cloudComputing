@@ -1,3 +1,4 @@
+/*
 console.log("JavaScript Loaded");
 
 // קבלת אלמנטים מהדף
@@ -55,10 +56,11 @@ loginForm.onsubmit = async function (event) {
 
   if (response.ok) {
     // אם ההתחברות הצליחה, נבצע הפניה לדף הדשבורד
-    window.location.href = "/users/dashboard";
+    window.location.href = "/dashboard";
   } else {
     // אם ההתחברות נכשלה, נציג הודעת שגיאה
     const errorText = await response.json(); // לקבלת הודעת השגיאה בפורמט JSON
     errorMessage.textContent = errorText.message; // עדכון הודעת השגיאה
   }
 };
+*/

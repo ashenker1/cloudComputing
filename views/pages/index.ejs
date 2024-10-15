@@ -9,17 +9,14 @@
     <div id="page">
       <%- include('../partials/header'); %>
 
-      <!-- כפתור התחברות -->
-      <div id="login-button-container">
-        <button id="loginBtn" class="login-button">Log in</button>
-      </div>
+      <!-- אזור התוכן הראשי עם תמונת רקע -->
+      <div class="main-content">
+        <% if (!isLoggedIn) { %>
+        <!-- אם המשתמש לא מחובר -->
 
-      <!-- חלון הקופץ (Modal) -->
-      <div id="loginModal" class="modal">
-        <div class="modal-content">
-          <span class="close">&times;</span>
-          <h2>Log In</h2>
-          <form id="loginForm" action="/users/login" method="POST">
+        <!-- אזור ה-Log In -->
+        <div id="login-section">
+          <form id="loginForm" action="/login" method="POST">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required />
 
@@ -29,14 +26,43 @@
             <button type="submit">Submit</button>
           </form>
         </div>
+
+        <!-- אזור הרשמה - Sign Up -->
+        <div id="sign-up-section">
+          <h2>Sign Up</h2>
+          <form id="signUpForm" action="/createUser" method="POST">
+            <label for="signUpId">ID:</label>
+            <input type="text" id="signUpId" name="id" required />
+            <label for="signUpUsername">Username:</label>
+            <input type="text" id="signUpUsername" name="username" required />
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required />
+            <label for="signUpPassword">Password:</label>
+            <input
+              type="password"
+              id="signUpPassword"
+              name="password"
+              required
+            />
+            <button type="submit">Create Account</button>
+          </form>
+        </div>
+
+        <% } else { %>
+        <!-- אם המשתמש מחובר -->
+
+        <!-- הצגת תוכן אחר אם המשתמש מחובר -->
+        <div id="welcome-section">
+          <h2>Welcome, <%= username %>!</h2>
+          <!-- כפתור התנתקות -->
+          <a href="/logout" id="logout-button">Log Out</a>
+          <!-- כאן אפשר להוסיף תוכן נוסף עבור המשתמשים המחוברים -->
+        </div>
+
+        <% } %>
       </div>
 
-      <!-- אזור התוכן הראשי עם תמונת רקע -->
-      <div class="main-content">
-        <!-- תוכן אחר יכול להיכנס כאן בעתיד -->      
-      </div>
+      <%- include('../partials/footer') %>
     </div>
-		<%- include('../partials/footer') %>
-    <script src="/main.js"></script>
   </body>
 </html>

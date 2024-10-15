@@ -844,8 +844,8 @@ p a:hover {
   font-weight: bold;
   margin-top: 10px; /* רווח מעל ההודעה */
 }
-
-/*////////////////////////////////////////////*/
+/*//////////////////////*/
+/* סגנון כללי */
 body,
 html {
   margin: 0;
@@ -860,9 +860,111 @@ html {
 }
 
 .main-content {
-  flex-grow: 1; /* ממלא את כל השטח הנותר */
+  flex-grow: 1;
   background-image: url("../images/background.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  width: 100%;
+  padding: 20px; /* ריווח מסביב */
+}
+
+/* סגנון לאזור ה-Log In */
+#login-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px; /* מרווח בין ה-Log In וה-Sign Up */
+}
+
+#login-section form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 800px; /* מקסימום רוחב */
+}
+
+#login-section label,
+#login-section input {
+  margin-right: 10px;
+}
+
+#login-section input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* סגנון לאזור ה-Sign Up */
+#sign-up-section {
+  background-color: rgba(255, 255, 255, 0.8); /* רקע לבן עם שקיפות */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 500px;
+  margin: 0 auto; /* ממרכז את ה-Sign Up בעמוד */
+}
+
+#sign-up-section h2 {
+  margin-bottom: 20px;
+}
+
+#sign-up-section form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#sign-up-section label,
+#sign-up-section input {
+  width: 100%;
+  max-width: 300px; /* מקסימום רוחב לשדות */
+  margin-bottom: 15px;
+}
+
+#sign-up-section input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#sign-up-section button {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#sign-up-section button:hover {
+  background-color: #218838;
+}
+/*עיצוב להודעות קופצות*/
+.alert {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+}
+
+#logout-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #f44336; /* אדום */
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+#logout-button:hover {
+  background-color: #c62828; /* צבע כהה יותר כשהעכבר מעל */
 }
