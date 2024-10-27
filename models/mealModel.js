@@ -122,41 +122,38 @@ const checkSugarLevelFromDescription = async (description) => {
 };
 
 // פונקציה להחזיר את היסטוריית הארוחות
-const getMealHistory = async (startDate, endDate, mealType, session) => {
+const getMealHistory = async (startDate, endDate, mealType, userId) => {
   try {
-    const pool = await poolPromise; // השתמש ב-poolPromise
-    const request = pool.request(); // יצירת אובייקט של בקשת SQL
+      const pool = await poolPromise;
+      const request = pool.request();
 
-    // הוספת פרמטרים לבקשה
-    request.input("userId", sql.Int, session.userId);
-    request.input("startDate", sql.Date, startDate);
-    request.input("endDate", sql.Date, endDate);
+      let query = `
+          SELECT id, mealType, description, image, mealDate, bloodSugar, foodSugar, isHoliday, userId
+          FROM Meals
+          WHERE userId = @userId
+      `;
 
-    // הוספת פרמטר עבור סוג הארוחה, אם לא נבחר - כל סוגי הארוחות
-    if (mealType && mealType !== "all") {
-      request.input("mealType", sql.NVarChar, mealType);
-    }
+      request.input('userId', sql.Int, userId);
 
-    // בניית שאילתת SQL
-    const query = `
-      SELECT mealDate, description AS mealName, mealType, calories, bloodSugar, 
-             CASE WHEN isHoliday = 1 THEN 'Holiday' ELSE 'Weekday' END AS dayType 
-      FROM Meals
-      WHERE userId = @userId 
-      AND mealDate BETWEEN @startDate AND @endDate
-      ${mealType && mealType !== "all" ? "AND mealType = @mealType" : ""}
-      ORDER BY mealDate DESC;
-    `;
+      if (startDate && endDate) {
+          query += ' AND mealDate BETWEEN @startDate AND @endDate';
+          request.input('startDate', sql.Date, new Date(startDate));
+          request.input('endDate', sql.Date, new Date(endDate));
+      }
 
-    // ביצוע השאילתה
-    const result = await request.query(query);
+      if (mealType && mealType !== 'all') {
+          query += ' AND mealType = @mealType';
+          request.input('mealType', sql.NVarChar, mealType);
+      }
 
-    return result.recordset; // מחזיר את רשימת הארוחות
+      query += ' ORDER BY mealDate DESC';
+
+      const result = await request.query(query);
+      return result.recordset;
   } catch (error) {
-    throw new Error("Failed to retrieve meal history: " + error.message);
+      throw new Error('Failed to retrieve meal history: ' + error.message);
   }
 };
-
 module.exports = {
   addMealToDatabase,
   getMealHistory,
