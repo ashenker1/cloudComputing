@@ -122,13 +122,13 @@ const checkSugarLevelFromDescription = async (description) => {
 };
 
 // פונקציה להחזיר את היסטוריית הארוחות
-const getMealHistory = async (startDate, endDate, mealType, userId = 1) => {
+const getMealHistory = async (startDate, endDate, mealType, session) => {
   try {
     const pool = await poolPromise; // השתמש ב-poolPromise
     const request = pool.request(); // יצירת אובייקט של בקשת SQL
 
     // הוספת פרמטרים לבקשה
-    request.input("userId", sql.Int, userId);
+    request.input("userId", sql.Int, session.userId);
     request.input("startDate", sql.Date, startDate);
     request.input("endDate", sql.Date, endDate);
 

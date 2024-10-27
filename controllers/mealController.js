@@ -21,7 +21,7 @@ const getMealHistory = async (req, res) => {
       startDate,
       endDate,
       mealType,
-      1
+      req.session
     ); // קריאה לפונקציה במודל
     res.status(200).json(meals); // החזרת הנתונים
   } catch (error) {
