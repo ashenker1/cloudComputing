@@ -29,24 +29,10 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="meal-type">Meal Type:</label>
-                            <select id="meal-type" name="mealType">
-                                <option value="all">All</option>
-                                <option value="breakfast">Breakfast</option>
-                                <option value="lunch">Lunch</option>
-                                <option value="dinner">Dinner</option>
-                                <option value="snack">Snack</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <input type="submit" value="View History" class="submit-button">
+                            <input type="submit" value="Filter History" class="submit-button">
                         </div>
                     </div>
                 </form>
-
-                <!-- כפתור חדש לצפייה בכל הארוחות -->
-                <button id="view-all-history">View All Meals</button>
 
                 <table class="meal-table">
                     <thead>
@@ -59,7 +45,6 @@
                             <th>Blood Sugar</th>
                             <th>Food Sugar</th>
                             <th>Is Holiday</th>
-                            <th>User ID</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -76,7 +61,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const filterForm = document.getElementById('filter-form');
-            const viewAllButton = document.getElementById('view-all-history');
             const tableBody = document.querySelector('.meal-table tbody');
     
             // טעינה אוטומטית של הארוחות בעת טעינת העמוד
@@ -87,17 +71,12 @@
                 fetchMealHistory();
             });
     
-            viewAllButton.addEventListener('click', function() {
-                fetchMealHistory(true);
-            });
-    
             function fetchMealHistory(viewAll = false) {
                 let url = '/meals/history';
                 if (!viewAll) {
                     const startDate = document.getElementById('start-date').value;
                     const endDate = document.getElementById('end-date').value;
-                    const mealType = document.getElementById('meal-type').value;
-                    url += `?startDate=${startDate}&endDate=${endDate}&mealType=${mealType}`;
+                    url += `?startDate=${startDate}&endDate=${endDate}`;
                 }
     
                 fetch(url)
@@ -135,7 +114,6 @@
                         <td>${meal.bloodSugar}</td>
                         <td>${meal.foodSugar || 'N/A'}</td>
                         <td>${meal.isHoliday ? 'Yes' : 'No'}</td>
-                        <td>${meal.userId}</td>
                     `;
                     tableBody.appendChild(row);
                 });
