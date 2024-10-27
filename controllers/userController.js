@@ -80,7 +80,8 @@ const login = async (req, res) => {
     res.render("pages/index", { isLoggedIn: true, username });
   } catch (err) {
     console.error(err);
-    res.render("pages/index", { isLoggedIn: false }); // במקרה של שגיאה, המשתמש לא מחובר
+    // במקרה של שגיאה, להעביר את הודעת השגיאה לעמוד
+    res.render("pages/index", { isLoggedIn: false, alertMessage: err.message });
   }
 };
 

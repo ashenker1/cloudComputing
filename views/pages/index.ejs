@@ -27,16 +27,26 @@
           </form>
         </div>
 
+        <% if (typeof alertMessage !== 'undefined') { %>
+        <script>
+          alert("<%= alertMessage %>");
+        </script>
+        <% } %>
+
         <!-- אזור הרשמה - Sign Up -->
         <div id="sign-up-section">
           <h2>Sign Up</h2>
           <form id="signUpForm" action="/createUser" method="POST">
             <label for="signUpId">ID:</label>
-            <input type="text" id="signUpId" name="id" required />
+            <!-- שינוי type ל-number -->
+            <input type="number" id="signUpId" name="id" required />
+
             <label for="signUpUsername">Username:</label>
             <input type="text" id="signUpUsername" name="username" required />
+
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required />
+
             <label for="signUpPassword">Password:</label>
             <input
               type="password"
@@ -44,6 +54,7 @@
               name="password"
               required
             />
+
             <button type="submit">Create Account</button>
           </form>
         </div>
