@@ -15,8 +15,11 @@ const createUser = async (req, res) => {
     // הפנה עם הודעה בפרמטר
     res.redirect("/?message=User created successfully");
   } catch (err) {
-    // חזור לדף ההתחברות עם הודעת שגיאה
-    res.redirect("/signup?message=" + encodeURIComponent(err.message));
+    console.log("Error during user creation:", err.message);
+
+    return res.render("pages/index", {
+      alertMessage: err.message,
+    });
   }
 };
 
