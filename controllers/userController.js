@@ -58,12 +58,19 @@ const updateUser = async (req, res) => {
 
 // מחיקת משתמש (Delete)
 const deleteUser = async (req, res) => {
-  const { userId } = req.params;
+  const userId = req.session.userId; // מקבל את מזהה המשתמש מה-session
   try {
-    await userModel.deleteUser(userId);
-    res.status(200).json({ message: "User deleted successfully" });
+    await userModel.deleteUser(userId); // מחיקת המשתמש מה-DB
+    req.session.destroy((err) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ message: "Failed to log out after deletion." });
+      }
+      res.redirect("/"); // הפניה לדף הראשי לאחר מחיקה מוצלחת
+    });
   } catch (err) {
-    res.status(err.status || 500).json({ message: err.message });
+    res.status(500).json({ message: "Failed to delete user" });
   }
 };
 

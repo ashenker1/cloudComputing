@@ -65,9 +65,18 @@
         <!-- הצגת תוכן אחר אם המשתמש מחובר -->
         <div id="welcome-section">
           <h2>Welcome, <%= username %>!</h2>
+
           <!-- כפתור התנתקות -->
           <a href="/logout" id="logout-button">Log Out</a>
-          <!-- כאן אפשר להוסיף תוכן נוסף עבור המשתמשים המחוברים -->
+
+          <form action="/deleteAccount?_method=DELETE" method="POST">
+            <button
+              type="submit"
+              onclick="return confirm('Are you sure you want to delete your account?')"
+            >
+              Delete Account
+            </button>
+          </form>
         </div>
 
         <% } %>
