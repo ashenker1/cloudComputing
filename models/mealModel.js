@@ -5,6 +5,7 @@ const {
   getSugarLevel,
 } = require("../dataAccess/mealDataAccess");
 const sql = require("mssql");
+const { predictBloodSugar } = require('../services/bloodSugarPrediction');
 
 let addMealToDatabase = async (mealData, session) => {
   const { mealType, description, image, mealDate, bloodSugar } = mealData;
@@ -20,6 +21,7 @@ let addMealToDatabase = async (mealData, session) => {
       !isFoodImage(tags.result.tags)
     ) {
       return "The image provided is not a food image.";
+      
     }
 
     // בדוק אם התאריך הוא חג
@@ -32,6 +34,17 @@ let addMealToDatabase = async (mealData, session) => {
     // בדוק את רמת הסוכר במזון
     const foodSugar = await checkSugarLevelFromDescription(description);
 
+        // חיזוי רמת הסוכר אם לא ניתנה רמת סוכר
+    let finalBloodSugar = bloodSugar; // אתחול עם רמת הסוכר הנתונה
+    if (!bloodSugar) {
+      const newSugarContent = { sugarContent: foodSugar }; // הגדרת תוכן סוכר חדש
+      finalBloodSugar = await predictBloodSugar(
+        newSugarContent, 
+        session.userId, 
+        holidayStatus
+      );
+      console.log("Predicted Blood Sugar:", finalBloodSugar);
+    }
     const request = pool.request(); // יצירת בקשה מהמאגר
 
     // הוספת פרמטרים לבקשה
@@ -39,7 +52,7 @@ let addMealToDatabase = async (mealData, session) => {
     request.input("description", sql.NVarChar, description);
     request.input("image", sql.NVarChar, image);
     request.input("mealDate", sql.Date, mealDate);
-    request.input("bloodSugar", sql.Float, bloodSugar);
+    request.input("bloodSugar", sql.Float, finalBloodSugar);
     request.input("foodSugar", foodSugar !== null ? foodSugar : null);
     request.input("isHoliday", sql.Bit, holidayStatus);
     request.input("userId", sql.Int, session.userId);

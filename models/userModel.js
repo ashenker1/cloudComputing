@@ -7,7 +7,9 @@ const createUser = async (id, username, password, email) => {
   console.log(id, username, password, email);
   const existingUser = await getUserByUsername(username);
   if (existingUser) {
-    throw { status: 409, message: "User already exists" };
+    console.log("User already exists")
+    return "User already exists"
+ //   throw { status: 409, message: "User already exists" };
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);

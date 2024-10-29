@@ -16,7 +16,9 @@ const createUser = async (req, res) => {
     res.redirect("/?message=User created successfully");
   } catch (err) {
     // חזור לדף ההתחברות עם הודעת שגיאה
-    res.redirect("/signup?message=" + encodeURIComponent(err.message));
+    console.error("Error in userController:", error.message); // פלט שגיאה מפורט
+    res.status(500).json({ message: error.message });
+   // res.redirect("/signup?message=" + encodeURIComponent(err.message));
   }
 };
 
