@@ -74,72 +74,72 @@
     </div>
 
     <script>
-        // פונקציה לשליפת היסטוריית הארוחות עם סינון
-        document.getElementById('filter-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // מונע את שליחת הטופס הרגילה
-
-            const startDate = document.getElementById('start-date').value;
-            const endDate = document.getElementById('end-date').value;
-            const mealType = document.getElementById('meal-type').value;
-
-            // שליחת בקשה לשרת
-            fetch(/api/meals/history?startDate=${startDate}&endDate=${endDate}&mealType=${mealType})
-                .then(response => response.json())
-                .then(data => {
-                    const tableBody = document.querySelector('.meal-table tbody');
-                    tableBody.innerHTML = ''; // נקה את התוכן הקיים
-
-                    // הוספת הנתונים לטבלה
-                    data.forEach(meal => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${meal.id}</td>
-                            <td>${meal.mealType}</td>
-                            <td>${meal.description}</td>
-                            <td><img src="${meal.image}" alt="${meal.mealType}" style="width: 50px; height: auto;"></td>
-                            <td>${meal.mealDate}</td>
-                            <td>${meal.bloodSugar}</td>
-                            <td>${meal.foodSugar}</td>
-                            <td>${meal.isHoliday ? 'Yes' : 'No'}</td>
-                            <td>${meal.userId}</td>
-                        `;
-                        tableBody.appendChild(row);
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterForm = document.getElementById('filter-form');
+            const viewAllButton = document.getElementById('view-all-history');
+            const tableBody = document.querySelector('.meal-table tbody');
+    
+            // טעינה אוטומטית של הארוחות בעת טעינת העמוד
+            fetchMealHistory(true);
+    
+            filterForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                fetchMealHistory();
+            });
+    
+            viewAllButton.addEventListener('click', function() {
+                fetchMealHistory(true);
+            });
+    
+            function fetchMealHistory(viewAll = false) {
+                let url = '/meals/history';
+                if (!viewAll) {
+                    const startDate = document.getElementById('start-date').value;
+                    const endDate = document.getElementById('end-date').value;
+                    const mealType = document.getElementById('meal-type').value;
+                    url += `?startDate=${startDate}&endDate=${endDate}&mealType=${mealType}`;
+                }
+    
+                fetch(url)
+                    .then(response => {
+                        if (response.status === 401) {
+                            window.location.href = '/?message=' + encodeURIComponent('Please login first');
+                            throw new Error('Not authenticated');
+                        }
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        displayMealHistory(data);
+                    })
+                    .catch(error => {
+                        if (error.message !== 'Not authenticated') {
+                            console.error("Error fetching meals:", error);
+                            alert("Error getting meal history. Please try again.");
+                        }
                     });
-                })
-                .catch(error => console.error("Error fetching meals:", error));
-        });
-
-        // פונקציה לצפייה בכל הארוחות
-        document.getElementById('view-all-history').addEventListener('click', function() {
-            fetch('/api/meals/history/all') // קריאה ל-API שהוספת
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const tableBody = document.querySelector('.meal-table tbody');
-                    tableBody.innerHTML = ''; // נקה את התוכן הקיים
-
-                    // הוספת הנתונים לטבלה
-                    data.forEach(meal => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${meal.id}</td>
-                            <td>${meal.mealType}</td>
-                            <td>${meal.description}</td>
-                            <td><img src="${meal.image}" alt="${meal.mealType}" style="width: 50px; height: auto;"></td>
-                            <td>${meal.mealDate}</td>
-                            <td>${meal.bloodSugar}</td>
-                            <td>${meal.foodSugar}</td>
-                            <td>${meal.isHoliday ? 'Yes' : 'No'}</td>
-                            <td>${meal.userId}</td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                })
-                .catch(error => console.error("Error fetching meals:", error));
+            }
+    
+            function displayMealHistory(meals) {
+                tableBody.innerHTML = '';
+                meals.forEach(meal => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${meal.id}</td>
+                        <td>${meal.mealType}</td>
+                        <td>${meal.description}</td>
+                        <td><img src="${meal.image}" alt="${meal.mealType}" style="width: 50px; height: auto;"></td>
+                        <td>${new Date(meal.mealDate).toLocaleDateString()}</td>
+                        <td>${meal.bloodSugar}</td>
+                        <td>${meal.foodSugar || 'N/A'}</td>
+                        <td>${meal.isHoliday ? 'Yes' : 'No'}</td>
+                        <td>${meal.userId}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
         });
     </script>
 </body>

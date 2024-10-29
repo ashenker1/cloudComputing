@@ -5,11 +5,15 @@ const jwt = require("jsonwebtoken");
 // פונקציה ליצירת משתמש חדש
 const createUser = async (id, username, password, email) => {
   console.log(id, username, password, email);
+
+  const existingId = await getUserById(id);
+  if (existingId) {
+    throw new Error("There is a user with the same ID");
+  }
+
   const existingUser = await getUserByUsername(username);
   if (existingUser) {
-    console.log("User already exists")
-    return "User already exists"
- //   throw { status: 409, message: "User already exists" };
+    throw new Error("User name already exists"); // לזרוק שגיאה במקרה שהמשתמש כבר קיים
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);

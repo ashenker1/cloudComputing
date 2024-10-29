@@ -4,6 +4,8 @@ const { config } = require("./config");
 const session = require("express-session");
 const app = express();
 const port = 3000;
+const methodOverride = require("method-override");
+app.use(methodOverride("_method"));
 require("dotenv").config();
 
 const poolPromise = new sql.ConnectionPool(config)

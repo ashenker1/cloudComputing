@@ -24,7 +24,7 @@ router.get("/dashboard", (req, res) => {
 router.put("/update", userController.updateUser);
 
 // מחיקת משתמש
-router.delete("/:userId", userController.deleteUser);
+router.delete("/deleteAccount", userController.deleteUser);
 
 // הזדהות משתמש
 router.post("/login", userController.login);
