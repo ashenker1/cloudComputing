@@ -4,7 +4,7 @@ const imageAnalysisModel = require('../models/imageAnalysisModel');  // ייבו
 
 const router = express.Router();
 
-// הגדרת אחסון התמונה באמצעות multer
+// הגדרת אחסון התמונה באמצעות 
 const storage = multer.memoryStorage(); // לאחסן את התמונה בזיכרון
 const upload = multer({ storage: storage });
 
