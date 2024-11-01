@@ -30,7 +30,14 @@ const createUser = async (id, username, password, email) => {
 
 // פונקציה לקבלת משתמש לפי מזהה
 const getUserById = async (userId) => {
-  return db.query("SELECT * FROM Users WHERE id = @userId", { userId });
+  try {
+    const data = await db.query("SELECT * FROM Users WHERE id = @userId", {
+      userId,
+    });
+    return data[0];
+  } catch (error) {
+    console.log("query error:", error);
+  }
 };
 
 // פונקציה לקבלת משתמש לפי שם משתמש

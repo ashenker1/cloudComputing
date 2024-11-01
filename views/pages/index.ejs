@@ -66,17 +66,25 @@
         <div id="welcome-section">
           <h2>Welcome, <%= username %>!</h2>
 
-          <!-- כפתור התנתקות -->
-          <a href="/logout" id="logout-button">Log Out</a>
+          <!-- מיכל עבור כפתורי התנתקות ומחיקת חשבון -->
+          <div class="button-container">
+            <!-- כפתור התנתקות -->
+            <a href="/logout" id="logout-button">Log Out</a>
 
-          <form action="/deleteAccount?_method=DELETE" method="POST">
-            <button
-              type="submit"
-              onclick="return confirm('Are you sure you want to delete your account?')"
+            <form
+              action="/deleteAccount?_method=DELETE"
+              method="POST"
+              class="delete-account-form"
             >
-              Delete Account
-            </button>
-          </form>
+              <button
+                type="submit"
+                onclick="return confirm('Are you sure you want to delete your account?')"
+                class="delete-button"
+              >
+                Delete Account
+              </button>
+            </form>
+          </div>
         </div>
 
         <% } %>

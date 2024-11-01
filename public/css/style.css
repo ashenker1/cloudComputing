@@ -956,6 +956,13 @@ html {
   border-radius: 5px;
 }
 
+.button-container {
+  display: flex; /* הופך את המיכל לאלמנט גמיש */
+  justify-content: center; /* מרכז את הכפתורים */
+  gap: 10px; /* מרווח בין הכפתורים */
+  margin-top: 20px; /* מרווח מעל הכפתורים */
+}
+
 #logout-button {
   display: inline-block;
   padding: 10px 20px;
@@ -966,5 +973,19 @@ html {
 }
 
 #logout-button:hover {
+  background-color: #c62828; /* צבע כהה יותר כשהעכבר מעל */
+}
+
+.delete-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #f44336; /* אדום */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer; /* מצביע על כך שהכפתור לחיץ */
+}
+
+.delete-button:hover {
   background-color: #c62828; /* צבע כהה יותר כשהעכבר מעל */
 }
