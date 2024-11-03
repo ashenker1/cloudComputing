@@ -1,0 +1,41 @@
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 0;
+}
+
+.footer-section p {
+    margin-bottom: 15px;
+}
+
+.social-links {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: inherit;
+    font-size: 18px;
+}
+
+.social-link i {
+    font-size: 24px;
+    width: 24px; /* קביעת רוחב קבוע לאייקונים */
+    text-align: center; /* יישור האייקונים למרכז */
+}
+
+.footnote {
+    margin-top: 20px;
+    text-align: center;
+}
