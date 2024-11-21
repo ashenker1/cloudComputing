@@ -1039,3 +1039,41 @@ html {
 .analytics {
   background-image: url("/images/analytics.png");
 }
+
+/* Style for the jumping message box */
+#message-box {
+  display: none;
+  position: fixed; /* Position it fixed relative to the viewport */
+  left: 50%;
+  top: 10px; /* Position it closer to the top of the viewport */
+  transform: translateX(-50%); /* Center it horizontally */
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  padding: 10px; /* Adds 10px of space inside the element on all sides */
+  font-size: 1.2rem;
+  color: rgb(8, 8, 8);
+  background-color: rgb(252, 252, 252);
+  border-radius: 0%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s;
+  z-index: 1000; /* Ensure it’s above other content */
+}
+
+/* Animation effect */
+.jump {
+  animation: jump 0.5s ease-out;
+}
+
+@keyframes jump {
+  0% {
+    transform: translate(-50%, 0);
+  } /* Adjust for fixed positioning */
+  50% {
+    transform: translate(-50%, -10px);
+  }
+  100% {
+    transform: translate(-50%, 0);
+  }
+}

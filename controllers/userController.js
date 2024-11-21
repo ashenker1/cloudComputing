@@ -1,5 +1,6 @@
 const userModel = require("../models/userModel");
 const jwt = require("jsonwebtoken"); // ייבוא jsonwebtoken
+const { consumeTestResult } = require("../kafka/kafkaConsumer");
 
 // יצירת משתמש חדש (Create)
 const createUser = async (req, res) => {
@@ -85,6 +86,10 @@ const login = async (req, res) => {
     req.session.token = token; // שמירת הטוקן ב-session
     req.session.isLoggedIn = true; // שמירת מצב ההתחברות ב-session
     req.session.username = username; // שמירת שם המשתמש ב-session (אם צריך)
+
+    // התחלת צריכת הודעות Kafka עבור המשתמש
+    console.log("User logged in, starting Kafka consumer...");
+    await consumeTestResult(); // צריכת הודעות
 
     // העברת המצב של isLoggedIn והשם משתמש לדף התצוגה
     res.render("pages/index", { isLoggedIn: true, username });

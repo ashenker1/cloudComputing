@@ -1,46 +1,68 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<meta charset="UTF-8" />
-	<title>About Us - the healthy life</title>
-	<link rel="stylesheet" type="text/css" href="css/style.css" />
-</head>
-<body>
-	<div id="page">
-		<%- include('../partials/header') %>
-		<div id="content">
-			<div>
-				<div class="aside">
-					<ul>
-					  <li class="first">
-						<a href="/index" class="meal-tracker"></a>
-						<a href="/index">Meal Tracking</a>
-					  </li>
-					  <li>
-						<a href="/index" class="blood-sugar-monitoring"></a>
-						<a href="/index">Blood Sugar Monitoring</a>
-					  </li>
-					  <li>
-						<a href="/index" class="analytics"></a>
-						<a href="/index">Data Analytics</a>
-					  </li>
-					</ul>
-				  </div>
-				  
-				<div>
-					<h1>About <span>the healthy life</span></h1>
-					<span>Manage Your Health with Ease</span>
-					<p>MealTracker is designed to help users keep track of their daily meals and monitor blood sugar levels, creating a convenient and efficient health management tool. Simply log your meals, and record your blood sugar levels after two hours for better insight into your dietary habits and health patterns.</p>
-					<span>Predictive Analysis</span>
-					<p>With enough meal entries, MealTracker leverages a decision tree to predict future blood sugar levels, giving users a helpful perspective on how their choices may impact their health. This tool is ideal for anyone looking to manage their health proactively and make informed dietary choices.</p>
-					<span>Visualize Your Progress</span>
-					<p>Our system also offers graphical displays of meal history, enabling users to visualize their dietary trends over time. Stay engaged with your health journey and make adjustments with the help of data-driven insights.</p>
-					<span>Join Our Community</span>
-					<p>If you have questions or need support with using MealTracker, join our online community. Here, you can connect with other users and share tips and experiences on maintaining a healthy lifestyle.</p>
-				</div>
-			</div>
-		</div>
-		<%- include('../partials/footer') %>
-	</div>	
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <script src="/socket.io/socket.io.js"></script>
+    <title>About Us - the healthy life</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+  </head>
+  <body>
+    <div id="page">
+      <%- include('../partials/header') %> <%- include('../partials/message')%>
+      <div id="content">
+        <div>
+          <div class="aside">
+            <ul>
+              <li class="first">
+                <a href="/index" class="meal-tracker"></a>
+                <a href="/index">Meal Tracking</a>
+              </li>
+              <li>
+                <a href="/index" class="blood-sugar-monitoring"></a>
+                <a href="/index">Blood Sugar Monitoring</a>
+              </li>
+              <li>
+                <a href="/index" class="analytics"></a>
+                <a href="/index">Data Analytics</a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h1>About <span>the healthy life</span></h1>
+            <span>Manage Your Health with Ease</span>
+            <p>
+              MealTracker is designed to help users keep track of their daily
+              meals and monitor blood sugar levels, creating a convenient and
+              efficient health management tool. Simply log your meals, and
+              record your blood sugar levels after two hours for better insight
+              into your dietary habits and health patterns.
+            </p>
+            <span>Predictive Analysis</span>
+            <p>
+              With enough meal entries, MealTracker leverages a decision tree to
+              predict future blood sugar levels, giving users a helpful
+              perspective on how their choices may impact their health. This
+              tool is ideal for anyone looking to manage their health
+              proactively and make informed dietary choices.
+            </p>
+            <span>Visualize Your Progress</span>
+            <p>
+              Our system also offers graphical displays of meal history,
+              enabling users to visualize their dietary trends over time. Stay
+              engaged with your health journey and make adjustments with the
+              help of data-driven insights.
+            </p>
+            <span>Join Our Community</span>
+            <p>
+              If you have questions or need support with using MealTracker, join
+              our online community. Here, you can connect with other users and
+              share tips and experiences on maintaining a healthy lifestyle.
+            </p>
+          </div>
+        </div>
+      </div>
+      <%- include('../partials/footer') %>
+    </div>
+  </body>
 </html>

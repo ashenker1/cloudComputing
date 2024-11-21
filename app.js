@@ -2,11 +2,34 @@ const express = require("express");
 const sql = require("mssql");
 const { config } = require("./config");
 const session = require("express-session");
+const http = require("http");
+const socketIo = require("socket.io"); // הוספת socket.io
 const app = express();
+const alert = require("./kafka/alerts");
+const { consumeTestResult } = require("./kafka/kafkaConsumer");
 const port = 3000;
 const methodOverride = require("method-override");
 app.use(methodOverride("_method"));
 require("dotenv").config();
+
+// יצירת שרת HTTP ו- socket.io
+const server = http.createServer(app);
+const io = socketIo(server); // הגדרת io
+
+alert.InitializeSocket(io);
+
+io.on("connection", (socket) => {
+  console.log("new client connected");
+
+  socket.on("disconnect", () => {
+    console.log("client disconnected");
+  });
+});
+const kafkacon = async () => {
+  await consumeTestResult();
+};
+
+kafkacon();
 
 const poolPromise = new sql.ConnectionPool(config)
   .connect()
@@ -43,10 +66,7 @@ app.use((req, res, next) => {
 
 const mealRoutes = require("./routes/mealRoutes"); // עדכן לפי המיקום המדויק שלך
 const userRoutes = require("./routes/userRoutes"); // כולל את הראוט של המשתמשים
-
-app.get("/", (req, res) => {
-  res.render("pages/index");
-});
+const { start } = require("repl");
 
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {
@@ -86,6 +106,6 @@ app.get("/favicon.ico", (req, res) => res.status(204));
 app.use("/meals", mealRoutes); // כולל את הראוטס שלך
 app.use("/", userRoutes); // חיבור הראוטים של המשתמשים
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });

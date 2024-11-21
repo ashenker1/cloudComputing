@@ -1,93 +1,120 @@
 <!DOCTYPE html>
 <!-- Website template by freewebsitetemplates.com -->
 <html>
-<head>
-	<meta charset="UTF-8" />
-	<title>Recipes - HealthyLife</title>
-	<link rel="stylesheet" type="text/css" href="css/style.css" />
-	<!--[if IE 9]>
-		<link rel="stylesheet" type="text/css" href="css/ie9.css" />
-	<![endif]-->
-	<!--[if IE 7]>
-		<link rel="stylesheet" type="text/css" href="css/ie7.css" />
-	<![endif]-->
-	<!--[if IE 6]>
-		<link rel="stylesheet" type="text/css" href="css/ie6.css" />
-	<![endif]-->
-</head>
-<body>
-	<div id="page">
-		<%- include('../partials/header') %>
-		<div id="content">
-			<div>
-				<div class="aside">
-					<ul>
-						<li class="first">
-							<a href="/index"><img src="images/freshly-picked.jpg" alt="Image" /></a>
-							<a href="/index">Freshly picked</a>
-						</li>
-						<li>
-							<a href="/index"><img src="images/fruit-desserts.jpg" alt="Image" /></a>
-							<a href="/index">Pastry Fruit Desserts</a>
-						</li>
-						<li>
-							<a href="/index"><img src="images/fruit-recipes.jpg" alt="Image" /></a>
-							<a href="/index">Fruity Recipes</a>
-						</li>
-					</ul>
-				</div>
-				<div>
-					<h2 class="first">Strawberry Cream Tart</h2>
-					<img src="images/strawberry-tart.jpg" alt="Image" />
-					<b>2 1/2  cup Lorem ipsum dolor sit amet,</b>
-					<b>3 tablespoons chopped fresh consectetur</b>
-					<b>2 cloves of Nullam euismod varius</b>
-					<b>1 pound elementum</b>
-					<b>5 teaspoon Suspendisse potenti</b>
-					<b>3 pinch ground  Maecenas sed</b>
-					<b>2 dolor eget erat</b>
-					<b>2 vehicula aliquam, sliced</b>
-					<b>1sed quis ante, diced</b>
-					<b>1 can Etiam feugiat, sour</b>
-					<h2>Lorem ipsum</h2>
-					<ol>
-						<li class="first">
-							<span id="primary"></span>
-							<p>Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem anitatis per seacula quarta decima et quinta decima.</p>
-						</li>
-						<li>
-							<span id="secondary"></span>
-							<p>Aenean quis viverra neque. Nulla facilisi. In hac habitasse platea dictumst. Curabitur lorem velit, suscipit a convallis vel, lobortis sit amet risus. Duis luctus aliquet pharetra. Donec suscipit nisl et sem scelerisque faucibus tempus dolor sodales. Nunc sodales nisl a quam egestas pretium non a leo.</p>
-						</li>
-						<li>
-							<span id="tertiary"></span>
-							<p>Aenean nec velit nec justo malesuada fermentum. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec eget nisl lobortis nisi congue ornare eu at nulla. In in ipsum nisi, quis luctus enim. Fusce fringilla molestie purus sed convallis. Aliquam nibh neque, placerat id faucibus vel, tincidunt quis ante. Curabitur tincidunt ultrices metus et volutpat. Nullam ut luctus eros.</p>
-						</li>
-					</ol>
-					<div>
-						<dl class="first">
-							<dt>Latest Added Recipes</dt>
-							<dd>Lorem ipsum dolor sit amet,</dd>
-							<dd>Consectetur adipiscin</dd>
-							<dd>Nullam euismod varius</dd>
-							<dd>Elementum</dd>
-							<dd>Suspendisse potenti</dd>
-							<dd><a href="/index">view all list</a></dd>
-						</dl>
-						<dl>
-							<dt>Popular Recipes</dt>
-							<dd>Lorem ipsum dolor sit amet,</dd>
-							<dd>Consectetur adipiscin</dd>
-							<dd>Nullam euismod varius</dd>
-							<dd>Elementum</dd>
-							<dd>Suspendisse potenti</dd>
-							<dd><a href="/index">view all list</a></dd>
-						</dl>
-					</div>
-				</div>
-			</div>
-		</div>
-		<%- include('../partials/footer') %>
-	</div>	
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <script src="/socket.io/socket.io.js"></script>
+    <title>Recipes - HealthyLife</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <!--[if IE 9]>
+      <link rel="stylesheet" type="text/css" href="css/ie9.css" />
+    <![endif]-->
+    <!--[if IE 7]>
+      <link rel="stylesheet" type="text/css" href="css/ie7.css" />
+    <![endif]-->
+    <!--[if IE 6]>
+      <link rel="stylesheet" type="text/css" href="css/ie6.css" />
+    <![endif]-->
+  </head>
+  <body>
+    <div id="page">
+      <%- include('../partials/header') %>
+      <%- include('../partials/message')%>
+      <div id="content">
+        <div>
+          <div class="aside">
+            <ul>
+              <li class="first">
+                <a href="/index"
+                  ><img src="images/freshly-picked.jpg" alt="Image"
+                /></a>
+                <a href="/index">Freshly picked</a>
+              </li>
+              <li>
+                <a href="/index"
+                  ><img src="images/fruit-desserts.jpg" alt="Image"
+                /></a>
+                <a href="/index">Pastry Fruit Desserts</a>
+              </li>
+              <li>
+                <a href="/index"
+                  ><img src="images/fruit-recipes.jpg" alt="Image"
+                /></a>
+                <a href="/index">Fruity Recipes</a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h2 class="first">Strawberry Cream Tart</h2>
+            <img src="images/strawberry-tart.jpg" alt="Image" />
+            <b>2 1/2 cup Lorem ipsum dolor sit amet,</b>
+            <b>3 tablespoons chopped fresh consectetur</b>
+            <b>2 cloves of Nullam euismod varius</b>
+            <b>1 pound elementum</b>
+            <b>5 teaspoon Suspendisse potenti</b>
+            <b>3 pinch ground Maecenas sed</b>
+            <b>2 dolor eget erat</b>
+            <b>2 vehicula aliquam, sliced</b>
+            <b>1sed quis ante, diced</b>
+            <b>1 can Etiam feugiat, sour</b>
+            <h2>Lorem ipsum</h2>
+            <ol>
+              <li class="first">
+                <span id="primary"></span>
+                <p>
+                  Mirum est notare quam littera gothica, quam nunc putamus parum
+                  claram, anteposuerit litterarum formas humanitatis per seacula
+                  quarta decima et quinta decima. Eodem anitatis per seacula
+                  quarta decima et quinta decima.
+                </p>
+              </li>
+              <li>
+                <span id="secondary"></span>
+                <p>
+                  Aenean quis viverra neque. Nulla facilisi. In hac habitasse
+                  platea dictumst. Curabitur lorem velit, suscipit a convallis
+                  vel, lobortis sit amet risus. Duis luctus aliquet pharetra.
+                  Donec suscipit nisl et sem scelerisque faucibus tempus dolor
+                  sodales. Nunc sodales nisl a quam egestas pretium non a leo.
+                </p>
+              </li>
+              <li>
+                <span id="tertiary"></span>
+                <p>
+                  Aenean nec velit nec justo malesuada fermentum. Class aptent
+                  taciti sociosqu ad litora torquent per conubia nostra, per
+                  inceptos himenaeos. Donec eget nisl lobortis nisi congue
+                  ornare eu at nulla. In in ipsum nisi, quis luctus enim. Fusce
+                  fringilla molestie purus sed convallis. Aliquam nibh neque,
+                  placerat id faucibus vel, tincidunt quis ante. Curabitur
+                  tincidunt ultrices metus et volutpat. Nullam ut luctus eros.
+                </p>
+              </li>
+            </ol>
+            <div>
+              <dl class="first">
+                <dt>Latest Added Recipes</dt>
+                <dd>Lorem ipsum dolor sit amet,</dd>
+                <dd>Consectetur adipiscin</dd>
+                <dd>Nullam euismod varius</dd>
+                <dd>Elementum</dd>
+                <dd>Suspendisse potenti</dd>
+                <dd><a href="/index">view all list</a></dd>
+              </dl>
+              <dl>
+                <dt>Popular Recipes</dt>
+                <dd>Lorem ipsum dolor sit amet,</dd>
+                <dd>Consectetur adipiscin</dd>
+                <dd>Nullam euismod varius</dd>
+                <dd>Elementum</dd>
+                <dd>Suspendisse potenti</dd>
+                <dd><a href="/index">view all list</a></dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+      <%- include('../partials/footer') %>
+    </div>
+  </body>
 </html>
