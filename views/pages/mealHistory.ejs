@@ -1,161 +1,194 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="UTF-8" />
     <script src="/socket.io/socket.io.js"></script>
     <title>Meal History - HealthyLife</title>
     <link rel="stylesheet" type="text/css" href="css/style.css" />
     <link rel="stylesheet" type="text/css" href="css/mealHistory.css" />
-  </head>
-  <body>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container, .meal-table { display: none; }
+    </style>
+</head>
+<body>
     <div id="page">
-      <%- include('../partials/header') %>
-      <%- include('../partials/message')%>
-      <div id="content">
-        <div>
-          <h1>Meal History</h1>
-          <p>
-            Welcome to your Meal History page! Here you can view a record of the
-            meals you've consumed over time.
-          </p>
+        <%- include('../partials/header') %>
+        <div id="content">
+            <div>
+                <h1>Meal History</h1>
+                <p>Welcome to your Meal History page! Here you can view a record of the meals you've consumed over time.</p>
 
-          <form id="filter-form" class="filter-form">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="start-date">Start Date:</label>
-                <input type="date" id="start-date" name="startDate" required />
-              </div>
+                <!-- כפתורים למעבר בין תצוגות -->
+                <button id="show-table-button">Show Table</button>
+                <button id="show-chart-button">Show Chart</button>
 
-              <div class="form-group">
-                <label for="end-date">End Date:</label>
-                <input type="date" id="end-date" name="endDate" required />
-              </div>
+                <!-- טופס סינון -->
+                <form id="filter-form" class="filter-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="start-date">Start Date:</label>
+                            <input type="date" id="start-date" name="startDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="end-date">End Date:</label>
+                            <input type="date" id="end-date" name="endDate" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="meal-type">Meal Type:</label>
+                            <select id="meal-type" name="mealType">
+                                <option value="all">All</option>
+                                <option value="breakfast">Breakfast</option>
+                                <option value="lunch">Lunch</option>
+                                <option value="dinner">Dinner</option>
+                                <option value="snack">Snack</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="View History" class="submit-button">
+                        </div>
+                    </div>
+                </form>
+
+                <!-- כפתור להצגת כל הארוחות -->
+                <button id="view-all-history">View All Meals</button>
+
+                <!-- מיכל הגרף -->
+                <div class="chart-container">
+                    <canvas id="mealChart"></canvas>
+                </div>
+
+                <!-- טבלת הארוחות -->
+                <table class="meal-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Meal Type</th>
+                            <th>Description</th>
+                            <th>Image</th>
+                            <th>Meal Date</th>
+                            <th>Blood Sugar</th>
+                            <th>Food Sugar</th>
+                            <th>Is Holiday</th>
+                            <th>User ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- נתונים ייטענו דינמית -->
+                    </tbody>
+                </table>
+
+                <p>If you have any further questions or need assistance, don't hesitate to reach out. We are here for you!</p>
             </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label for="meal-type">Meal Type:</label>
-                <select id="meal-type" name="mealType">
-                  <option value="all">All</option>
-                  <option value="breakfast">Breakfast</option>
-                  <option value="lunch">Lunch</option>
-                  <option value="dinner">Dinner</option>
-                  <option value="snack">Snack</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <input
-                  type="submit"
-                  value="View History"
-                  class="submit-button"
-                />
-              </div>
-            </div>
-          </form>
-
-          <!-- כפתור חדש לצפייה בכל הארוחות -->
-          <button id="view-all-history">View All Meals</button>
-
-          <table class="meal-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Meal Type</th>
-                <th>Description</th>
-                <th>Image</th>
-                <th>Meal Date</th>
-                <th>Blood Sugar</th>
-                <th>Food Sugar</th>
-                <th>Is Holiday</th>
-                <th>User ID</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Data will be dynamically generated here -->
-            </tbody>
-          </table>
-
-          <p>
-            If you have any further questions or need assistance, don't hesitate
-            to reach out. We are here for you!
-          </p>
         </div>
-      </div>
-      <%- include('../partials/footer') %>
+        <%- include('../partials/footer') %>
     </div>
 
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const filterForm = document.getElementById("filter-form");
-        const viewAllButton = document.getElementById("view-all-history");
-        const tableBody = document.querySelector(".meal-table tbody");
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterForm = document.getElementById('filter-form');
+            const viewAllButton = document.getElementById('view-all-history');
+            const tableBody = document.querySelector('.meal-table tbody');
+            const mealChart = document.getElementById('mealChart').getContext('2d');
+            const showTableButton = document.getElementById('show-table-button');
+            const showChartButton = document.getElementById('show-chart-button');
+            const chartContainer = document.querySelector('.chart-container');
+            const mealTable = document.querySelector('.meal-table');
+            let chartInstance;
 
-        // טעינה אוטומטית של הארוחות בעת טעינת העמוד
-        fetchMealHistory(true);
+            // הצגת טבלה עם פתיחת הדף
+            fetchMealHistory(true);
+            mealTable.style.display = 'table';
 
-        filterForm.addEventListener("submit", function (event) {
-          event.preventDefault();
-          fetchMealHistory();
-        });
-
-        viewAllButton.addEventListener("click", function () {
-          fetchMealHistory(true);
-        });
-
-        function fetchMealHistory(viewAll = false) {
-          let url = "/meals/history";
-          if (!viewAll) {
-            const startDate = document.getElementById("start-date").value;
-            const endDate = document.getElementById("end-date").value;
-            const mealType = document.getElementById("meal-type").value;
-            url += `?startDate=${startDate}&endDate=${endDate}&mealType=${mealType}`;
-          }
-
-          fetch(url)
-            .then((response) => {
-              if (response.status === 401) {
-                window.location.href =
-                  "/?message=" + encodeURIComponent("Please login first");
-                throw new Error("Not authenticated");
-              }
-              if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
-              return response.json();
-            })
-            .then((data) => {
-              displayMealHistory(data);
-            })
-            .catch((error) => {
-              if (error.message !== "Not authenticated") {
-                console.error("Error fetching meals:", error);
-                alert("Error getting meal history. Please try again.");
-              }
+            // אירועי לחיצה למעבר בין תצוגות
+            showTableButton.addEventListener('click', function() {
+                chartContainer.style.display = 'none';
+                mealTable.style.display = 'table';
             });
-        }
 
-        function displayMealHistory(meals) {
-          tableBody.innerHTML = "";
-          meals.forEach((meal) => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
+            showChartButton.addEventListener('click', function() {
+                chartContainer.style.display = 'block';
+                mealTable.style.display = 'none';
+            });
+
+            filterForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                fetchMealHistory();
+            });
+
+            viewAllButton.addEventListener('click', function() {
+                fetchMealHistory(true);
+            });
+
+            function fetchMealHistory(viewAll = false) {
+                let url = '/meals/history';
+                if (!viewAll) {
+                    const startDate = document.getElementById('start-date').value;
+                    const endDate = document.getElementById('end-date').value;
+                    const mealType = document.getElementById('meal-type').value;
+                    url += `?startDate=${startDate}&endDate=${endDate}&mealType=${mealType}`;
+                }
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        displayMealHistory(data);
+                        updateChart(data);
+                    })
+                    .catch(error => console.error("Error fetching meals:", error));
+            }
+
+            function displayMealHistory(meals) {
+                tableBody.innerHTML = '';
+                meals.forEach(meal => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
                         <td>${meal.id}</td>
                         <td>${meal.mealType}</td>
                         <td>${meal.description}</td>
-                        <td><img src="${meal.image}" alt="${
-              meal.mealType
-            }" style="width: 50px; height: auto;"></td>
+                        <td><img src="${meal.image}" alt="${meal.mealType}" style="width: 50px; height: auto;"></td>
                         <td>${new Date(meal.mealDate).toLocaleDateString()}</td>
                         <td>${meal.bloodSugar}</td>
-                        <td>${meal.foodSugar || "N/A"}</td>
-                        <td>${meal.isHoliday ? "Yes" : "No"}</td>
+                        <td>${meal.foodSugar || 'N/A'}</td>
+                        <td>${meal.isHoliday ? 'Yes' : 'No'}</td>
                         <td>${meal.userId}</td>
                     `;
-            tableBody.appendChild(row);
-          });
-        }
-      });
+                    tableBody.appendChild(row);
+                });
+            }
+
+            function updateChart(meals) {
+                const dates = meals.map(meal => new Date(meal.mealDate).toLocaleDateString());
+                const bloodSugarLevels = meals.map(meal => meal.bloodSugar);
+
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+
+                chartInstance = new Chart(mealChart, {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'Blood Sugar Levels',
+                            data: bloodSugarLevels,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 2,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { title: { display: true, text: 'Date' } },
+                            y: { title: { display: true, text: 'Blood Sugar Level' } }
+                        }
+                    }
+                });
+            }
+        });
     </script>
-  </body>
+</body>
 </html>
