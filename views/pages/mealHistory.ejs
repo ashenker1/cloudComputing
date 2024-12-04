@@ -9,10 +9,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Button Styling for Consistency */
-        #show-table-button, 
         #show-chart-button, 
-        #show-cards-button, 
-        #view-all-history,
+        #view-all-history, 
         .submit-button {
             background: #2c3e50;
             color: #fc8181;
@@ -26,23 +24,22 @@
             transition: background-color 0.3s ease;
         }
 
-        #show-table-button:hover, 
         #show-chart-button:hover, 
-        #show-cards-button:hover, 
-        #view-all-history:hover,
+        #view-all-history:hover, 
         .submit-button:hover {
             background: #34495e;
         }
 
-        .chart-container, .meal-cards-container { 
+        .chart-container, .meal-table { 
             display: none; 
         }
 
         .meal-cards-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* כרטיסיות שיושמו אוטומטית בשורות */
             gap: 20px;
             padding: 20px;
+            justify-items: center; /* ממרכז את הכרטיסיות */
         }
 
         .meal-card {
@@ -54,7 +51,8 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             transition: transform 0.3s ease;
             cursor: pointer;
-            height: 100%;
+            max-width: 100%; /* מאפשר לכרטיסיות להתרחב לגודל מלא */
+            width: 100%;
         }
 
         .meal-card:hover {
@@ -70,7 +68,6 @@
         .meal-card-content {
             display: flex;
             flex-direction: column;
-            flex-grow: 1;
             padding: 15px;
         }
 
@@ -106,22 +103,17 @@
         }
 
         /* Responsive Adjustments */
-        @media (max-width: 1200px) {
-            .meal-cards-container {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
         @media (max-width: 900px) {
             .meal-cards-container {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr; /* שורה אחת במסכים קטנים */
             }
         }
 
-        @media (max-width: 600px) {
-            .meal-cards-container {
-                grid-template-columns: 1fr;
-            }
+        /* Style for the button container */
+        .view-options {
+            display: flex;
+            justify-content: flex-start; /* לשים את הכפתורים בצמוד לשמאל */
+            gap: 10px; /* מרווח בין הכפתורים */
         }
     </style>
 </head>
@@ -136,9 +128,8 @@
                 </div>
 
                 <div class="view-options">
-                    <button id="show-table-button">Show Table</button>
                     <button id="show-chart-button">Show Chart</button>
-                    <button id="show-cards-button">Show Cards</button>
+                    <button id="view-all-history">View All Meals</button>
                 </div>
 
                 <div class="assistance-text">
@@ -173,30 +164,9 @@
                     </div>
                 </form>
 
-                <button id="view-all-history">View All Meals</button>
-
                 <div class="chart-container">
                     <canvas id="mealChart"></canvas>
                 </div>
-
-                <table class="meal-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Meal Type</th>
-                            <th>Description</th>
-                            <th>Image</th>
-                            <th>Meal Date</th>
-                            <th>Blood Sugar</th>
-                            <th>Food Sugar</th>
-                            <th>Is Holiday</th>
-                            <th>User ID</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- נתונים ייטענו דינמית -->
-                    </tbody>
-                </table>
 
                 <div class="meal-cards-container"></div>
             </div>
@@ -208,35 +178,17 @@
         document.addEventListener('DOMContentLoaded', function() {
             const filterForm = document.getElementById('filter-form');
             const viewAllButton = document.getElementById('view-all-history');
-            const tableBody = document.querySelector('.meal-table tbody');
             const mealChart = document.getElementById('mealChart').getContext('2d');
-            const showTableButton = document.getElementById('show-table-button');
             const showChartButton = document.getElementById('show-chart-button');
-            const showCardsButton = document.getElementById('show-cards-button');
             const chartContainer = document.querySelector('.chart-container');
-            const mealTable = document.querySelector('.meal-table');
             const mealCardsContainer = document.querySelector('.meal-cards-container');
             let chartInstance;
 
             fetchMealHistory(true);
-            mealTable.style.display = 'table';
-
-            showTableButton.addEventListener('click', function() {
-                chartContainer.style.display = 'none';
-                mealTable.style.display = 'table';
-                mealCardsContainer.style.display = 'none';
-            });
 
             showChartButton.addEventListener('click', function() {
                 chartContainer.style.display = 'block';
-                mealTable.style.display = 'none';
                 mealCardsContainer.style.display = 'none';
-            });
-
-            showCardsButton.addEventListener('click', function() {
-                chartContainer.style.display = 'none';
-                mealTable.style.display = 'none';
-                mealCardsContainer.style.display = 'grid';
             });
 
             filterForm.addEventListener('submit', function(event) {
@@ -260,30 +212,10 @@
                 fetch(url)
                     .then(response => response.json())
                     .then(data => {
-                        displayMealHistory(data);
                         displayMealCards(data);
                         updateChart(data);
                     })
                     .catch(error => console.error("Error fetching meals:", error));
-            }
-
-            function displayMealHistory(meals) {
-                tableBody.innerHTML = '';
-                meals.forEach(meal => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${meal.id}</td>
-                        <td>${meal.mealType}</td>
-                        <td>${meal.description}</td>
-                        <td><img src="${meal.image}" alt="${meal.mealType}" style="width: 50px; height: auto;"></td>
-                        <td>${new Date(meal.mealDate).toLocaleDateString()}</td>
-                        <td>${meal.bloodSugar}</td>
-                        <td>${meal.foodSugar || 'N/A'}</td>
-                        <td>${meal.isHoliday ? 'Yes' : 'No'}</td>
-                        <td>${meal.userId}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
             }
 
             function displayMealCards(meals) {
@@ -300,8 +232,6 @@
                         <div class="meal-card-details">
                             <p>Blood Sugar: ${meal.bloodSugar}</p>
                             <p>Food Sugar: ${meal.foodSugar || 'N/A'}</p>
-                            <p>Holiday: ${meal.isHoliday ? 'Yes' : 'No'}</p>
-                            <p>User ID: ${meal.userId}</p>
                         </div>
                     `;
 
@@ -336,9 +266,10 @@
                     },
                     options: {
                         responsive: true,
-                        scales: {
-                            x: { title: { display: true, text: 'Date' } },
-                            y: { title: { display: true, text: 'Blood Sugar Level' } }
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
                         }
                     }
                 });
