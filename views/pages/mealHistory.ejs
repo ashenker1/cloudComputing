@@ -2,9 +2,128 @@
 <html>
 <head>
     <meta charset="UTF-8" />
+    <script src="/socket.io/socket.io.js"></script>
     <title>Meal History - HealthyLife</title>
     <link rel="stylesheet" type="text/css" href="css/style.css" />
     <link rel="stylesheet" type="text/css" href="css/mealHistory.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Button Styling for Consistency */
+        #show-table-button, 
+        #show-chart-button, 
+        #show-cards-button, 
+        #view-all-history,
+        .submit-button {
+            background: #2c3e50;
+            color: #fc8181;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        #show-table-button:hover, 
+        #show-chart-button:hover, 
+        #show-cards-button:hover, 
+        #view-all-history:hover,
+        .submit-button:hover {
+            background: #34495e;
+        }
+
+        .chart-container, .meal-cards-container { 
+            display: none; 
+        }
+
+        .meal-cards-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .meal-card {
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+        }
+
+        .meal-card:hover {
+            transform: scale(1.05);
+        }
+
+        .meal-card-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .meal-card-content {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            padding: 15px;
+        }
+
+        .meal-card-content h3 {
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+
+        .meal-card-content p {
+            flex-grow: 1;
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        .meal-card-details {
+            display: none;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .welcome-text, .assistance-text {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .assistance-text {
+            font-style: italic;
+            color: #666;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1200px) {
+            .meal-cards-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .meal-cards-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .meal-cards-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <div id="page">
@@ -12,21 +131,31 @@
         <div id="content">
             <div>
                 <h1>Meal History</h1>
-                <p>Welcome to your Meal History page! Here you can view a record of the meals you've consumed over time.</p>
-                
+                <div class="welcome-text">
+                    <p>Welcome to your Meal History page! Here you can view a record of the meals you've consumed over time.</p>
+                </div>
+
+                <div class="view-options">
+                    <button id="show-table-button">Show Table</button>
+                    <button id="show-chart-button">Show Chart</button>
+                    <button id="show-cards-button">Show Cards</button>
+                </div>
+
+                <div class="assistance-text">
+                    <p>If you have any further questions or need assistance, don't hesitate to reach out. We are here for you!</p>
+                </div>
+
                 <form id="filter-form" class="filter-form">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="start-date">Start Date:</label>
                             <input type="date" id="start-date" name="startDate" required>
                         </div>
-
                         <div class="form-group">
                             <label for="end-date">End Date:</label>
                             <input type="date" id="end-date" name="endDate" required>
                         </div>
                     </div>
-
                     <div class="form-row">
                         <div class="form-group">
                             <label for="meal-type">Meal Type:</label>
@@ -38,15 +167,17 @@
                                 <option value="snack">Snack</option>
                             </select>
                         </div>
-                        
                         <div class="form-group">
                             <input type="submit" value="View History" class="submit-button">
                         </div>
                     </div>
                 </form>
 
-                <!-- כפתור חדש לצפייה בכל הארוחות -->
                 <button id="view-all-history">View All Meals</button>
+
+                <div class="chart-container">
+                    <canvas id="mealChart"></canvas>
+                </div>
 
                 <table class="meal-table">
                     <thead>
@@ -63,11 +194,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Data will be dynamically generated here -->
+                        <!-- נתונים ייטענו דינמית -->
                     </tbody>
                 </table>
 
-                <p>If you have any further questions or need assistance, don't hesitate to reach out. We are here for you!</p>
+                <div class="meal-cards-container"></div>
             </div>
         </div>
         <%- include('../partials/footer') %>
@@ -78,19 +209,45 @@
             const filterForm = document.getElementById('filter-form');
             const viewAllButton = document.getElementById('view-all-history');
             const tableBody = document.querySelector('.meal-table tbody');
-    
-            // טעינה אוטומטית של הארוחות בעת טעינת העמוד
+            const mealChart = document.getElementById('mealChart').getContext('2d');
+            const showTableButton = document.getElementById('show-table-button');
+            const showChartButton = document.getElementById('show-chart-button');
+            const showCardsButton = document.getElementById('show-cards-button');
+            const chartContainer = document.querySelector('.chart-container');
+            const mealTable = document.querySelector('.meal-table');
+            const mealCardsContainer = document.querySelector('.meal-cards-container');
+            let chartInstance;
+
             fetchMealHistory(true);
-    
+            mealTable.style.display = 'table';
+
+            showTableButton.addEventListener('click', function() {
+                chartContainer.style.display = 'none';
+                mealTable.style.display = 'table';
+                mealCardsContainer.style.display = 'none';
+            });
+
+            showChartButton.addEventListener('click', function() {
+                chartContainer.style.display = 'block';
+                mealTable.style.display = 'none';
+                mealCardsContainer.style.display = 'none';
+            });
+
+            showCardsButton.addEventListener('click', function() {
+                chartContainer.style.display = 'none';
+                mealTable.style.display = 'none';
+                mealCardsContainer.style.display = 'grid';
+            });
+
             filterForm.addEventListener('submit', function(event) {
                 event.preventDefault();
                 fetchMealHistory();
             });
-    
+
             viewAllButton.addEventListener('click', function() {
                 fetchMealHistory(true);
             });
-    
+
             function fetchMealHistory(viewAll = false) {
                 let url = '/meals/history';
                 if (!viewAll) {
@@ -99,29 +256,17 @@
                     const mealType = document.getElementById('meal-type').value;
                     url += `?startDate=${startDate}&endDate=${endDate}&mealType=${mealType}`;
                 }
-    
+
                 fetch(url)
-                    .then(response => {
-                        if (response.status === 401) {
-                            window.location.href = '/?message=' + encodeURIComponent('Please login first');
-                            throw new Error('Not authenticated');
-                        }
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
+                    .then(response => response.json())
                     .then(data => {
                         displayMealHistory(data);
+                        displayMealCards(data);
+                        updateChart(data);
                     })
-                    .catch(error => {
-                        if (error.message !== 'Not authenticated') {
-                            console.error("Error fetching meals:", error);
-                            alert("Error getting meal history. Please try again.");
-                        }
-                    });
+                    .catch(error => console.error("Error fetching meals:", error));
             }
-    
+
             function displayMealHistory(meals) {
                 tableBody.innerHTML = '';
                 meals.forEach(meal => {
@@ -138,6 +283,64 @@
                         <td>${meal.userId}</td>
                     `;
                     tableBody.appendChild(row);
+                });
+            }
+
+            function displayMealCards(meals) {
+                mealCardsContainer.innerHTML = '';
+                meals.forEach(meal => {
+                    const card = document.createElement('div');
+                    card.classList.add('meal-card');
+                    card.innerHTML = `
+                        <img src="${meal.image}" alt="${meal.mealType}" class="meal-card-image">
+                        <div class="meal-card-content">
+                            <h3>${meal.mealType} - ${new Date(meal.mealDate).toLocaleDateString()}</h3>
+                            <p>${meal.description.substring(0, 50)}...</p>
+                        </div>
+                        <div class="meal-card-details">
+                            <p>Blood Sugar: ${meal.bloodSugar}</p>
+                            <p>Food Sugar: ${meal.foodSugar || 'N/A'}</p>
+                            <p>Holiday: ${meal.isHoliday ? 'Yes' : 'No'}</p>
+                            <p>User ID: ${meal.userId}</p>
+                        </div>
+                    `;
+
+                    card.addEventListener('click', () => {
+                        const details = card.querySelector('.meal-card-details');
+                        details.style.display = details.style.display === 'block' ? 'none' : 'block';
+                    });
+
+                    mealCardsContainer.appendChild(card);
+                });
+            }
+
+            function updateChart(meals) {
+                const dates = meals.map(meal => new Date(meal.mealDate).toLocaleDateString());
+                const bloodSugarLevels = meals.map(meal => meal.bloodSugar);
+
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+
+                chartInstance = new Chart(mealChart, {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'Blood Sugar Levels',
+                            data: bloodSugarLevels,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 2,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { title: { display: true, text: 'Date' } },
+                            y: { title: { display: true, text: 'Blood Sugar Level' } }
+                        }
+                    }
                 });
             }
         });

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<<<<<<< HEAD
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,79 +40,224 @@
             <div>
               <label for="mealDate">Meal Date:</label>
               <input type="date" id="mealDate" name="mealDate" required>
+=======
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/socket.io/socket.io.js"></script>
+    <title>Add Meal</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+      }
+
+      #content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        margin: 20px;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 800px;
+      }
+
+      h2 {
+        text-align: center;
+        color: #d5006d;
+        margin-bottom: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      input[type="date"],
+      textarea,
+      select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        font-size: 14px;
+        margin-bottom: 10px;
+        transition: border 0.3s;
+      }
+
+      input[type="text"]:focus,
+      input[type="number"]:focus,
+      input[type="date"]:focus,
+      textarea:focus,
+      select:focus {
+        border: 1px solid #d5006d;
+      }
+
+      textarea {
+        resize: none;
+      }
+
+      button {
+        width: auto;
+        padding: 10px 20px;
+        background-color: #d5006d;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+        display: block;
+        margin: 20px 0 0 0;
+      }
+
+      button:hover {
+        background-color: #b0004d;
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="page">
+      <%- include('../partials/header') %> <%- include('../partials/message')%>
+      <div id="content">
+        <div class="container">
+          <h2>Add New Meal</h2>
+          <form id="mealForm">
+            <div class="form-group">
+              <label for="mealType">Meal Type:</label>
+              <select id="mealType" name="mealType" required>
+                <option value="">Select Meal Type</option>
+                <option value="Breakfast">Breakfast</option>
+                <option value="Lunch">Lunch</option>
+                <option value="Dinner">Dinner</option>
+              </select>
+>>>>>>> 38abf8a43fb655ec52ad00c9791055c47da1e666
             </div>
 
-            <div>
-              <label for="bloodSugar">Blood Sugar (mg/dL):</label>
-              <small style="display: block; color: #555; margin-bottom: 5px;">
-                You can either enter a value or leave blank to calculate based on previous data.
-              </small>
-              <input type="number" id="bloodSugar" name="bloodSugar" min="0" step="1" placeholder="Auto calculated if left blank">
+            <div class="form-group">
+              <label for="description">Description:</label>
+              <textarea
+                id="description"
+                name="description"
+                rows="3"
+                required
+              ></textarea>
             </div>
-          </div>
 
-          <div class="button-container">
-            <button type="submit">Add Meal</button>
-          </div>
-        </form>
+            <div class="form-group">
+              <label for="image">Image URL:</label>
+              <input type="text" id="image" name="image" required />
+            </div>
+
+            <div class="form-group-inline">
+              <div>
+                <label for="mealDate">Meal Date:</label>
+                <input type="date" id="mealDate" name="mealDate" required />
+              </div>
+
+              <div>
+                <label for="bloodSugar">Blood Sugar (mg/dL):</label>
+                <small style="display: block; color: #555; margin-bottom: 5px">
+                  You can either enter a value or leave blank to calculate based
+                  on previous data.
+                </small>
+                <input
+                  type="number"
+                  id="bloodSugar"
+                  name="bloodSugar"
+                  min="0"
+                  step="1"
+                  placeholder="Auto calculated if left blank"
+                />
+              </div>
+            </div>
+
+            <div class="button-container">
+              <button type="submit">Add Meal</button>
+            </div>
+          </form>
+        </div>
       </div>
+
+      <%- include('../partials/footer'); %>
     </div>
 
-    <%- include('../partials/footer'); %>
-  </div>
+    <script>
+      document
+        .getElementById("mealForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault(); // מונע את ברירת המחדל של שליחת הטופס
 
-  <script>
-    document.getElementById('mealForm').addEventListener('submit', async (event) => {
-      event.preventDefault(); // מונע את ברירת המחדל של שליחת הטופס
+          const formData = new FormData(event.target); // קבלת נתוני הטופס
+          const mealData = Object.fromEntries(formData); // המרת הנתונים לאובייקט
 
-      const formData = new FormData(event.target); // קבלת נתוני הטופס
-      const mealData = Object.fromEntries(formData); // המרת הנתונים לאובייקט
+          // כאן נוסיף בדיקה האם התמונה תקינה לפני שליחה
+          const isImageValid = await validateImage(mealData.image); // בדיקה אם התמונה תקינה
 
-      // כאן נוסיף בדיקה האם התמונה תקינה לפני שליחה
-      const isImageValid = await validateImage(mealData.image); // בדיקה אם התמונה תקינה
+          if (!isImageValid) {
+            alert("The image is not valid. Please upload a valid food image.");
+            return; // לא נמשיך לשלוח את הנתונים
+          }
 
-      if (!isImageValid) {
-          alert('The image is not valid. Please upload a valid food image.');
-          return; // לא נמשיך לשלוח את הנתונים
-      }
+          try {
+            const response = await fetch("/meals/add", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(mealData),
+            });
 
-      try {
-        const response = await fetch('/meals/add', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(mealData),
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+
+            const jsonResponse = await response.json(); // הנחה שהשרת מחזיר את ההודעה בפורמט JSON
+
+            // מציג את הודעת ההצלחה
+            alert(jsonResponse.message); // מראה את ההודעה
+
+            // מחיקת התוכן של הטופס אחרי הצלחה בלבד
+            event.target.reset();
+          } catch (error) {
+            console.error("Error adding meal:", error);
+            // מציג הודעת שגיאה בחלון קופץ
+            alert("Failed to add meal: " + error.message);
+          }
         });
 
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+      // פונקציה לבדוק אם התמונה תקינה
+      async function validateImage(imageUrl) {
+        // הוספת לוגיקה לבדוק אם התמונה היא של אוכל
+        // כאן תוכל להוסיף את הלוגיקה שלך לבדוק אם התמונה מתאימה
+        // לדוגמה, יכול להיות שתרצה לבדוק אם התמונה מקושרת לאתר מסויים או שהיא נראית בסגנון מסויים
 
-        const jsonResponse = await response.json(); // הנחה שהשרת מחזיר את ההודעה בפורמט JSON
-
-        // מציג את הודעת ההצלחה
-        alert(jsonResponse.message); // מראה את ההודעה
-
-        // מחיקת התוכן של הטופס אחרי הצלחה בלבד
-        event.target.reset();
-
-      } catch (error) {
-        console.error('Error adding meal:', error);
-        // מציג הודעת שגיאה בחלון קופץ
-        alert('Failed to add meal: ' + error.message);
+        // לדוגמה, פשוט נחזיר true כדי לדמות שהכל תקין
+        return true; // החלף בלוגיקה שלך
       }
-    });
-
-    // פונקציה לבדוק אם התמונה תקינה
-    async function validateImage(imageUrl) {
-      // הוספת לוגיקה לבדוק אם התמונה היא של אוכל
-      // כאן תוכל להוסיף את הלוגיקה שלך לבדוק אם התמונה מתאימה
-      // לדוגמה, יכול להיות שתרצה לבדוק אם התמונה מקושרת לאתר מסויים או שהיא נראית בסגנון מסויים
-
-      // לדוגמה, פשוט נחזיר true כדי לדמות שהכל תקין
-      return true; // החלף בלוגיקה שלך
-    }
-  </script>
-</body>
+    </script>
+  </body>
 </html>
