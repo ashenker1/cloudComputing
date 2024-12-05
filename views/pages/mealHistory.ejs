@@ -63,108 +63,127 @@
         </div>
         <%- include('../partials/footer') %>
     </div>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const filterForm = document.getElementById('filter-form');
-            const viewAllButton = document.getElementById('view-all-history');
-            const mealChart = document.getElementById('mealChart').getContext('2d');
-            const showChartButton = document.getElementById('show-chart-button');
-            const chartContainer = document.querySelector('.chart-container');
-            const mealCardsContainer = document.querySelector('.meal-cards-container');
-            let chartInstance;
-
-            fetchMealHistory(true);
-
-            showChartButton.addEventListener('click', function() {
-                chartContainer.style.display = 'block';
-                mealCardsContainer.style.display = 'none';
-            });
-
-            filterForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                fetchMealHistory();
-            });
-
-            viewAllButton.addEventListener('click', function() {
-                fetchMealHistory(true);
-            });
-
-            function fetchMealHistory(viewAll = false) {
-                let url = '/meals/history';
-                if (!viewAll) {
-                    const startDate = document.getElementById('start-date').value;
-                    const endDate = document.getElementById('end-date').value;
-                    const mealType = document.getElementById('meal-type').value;
-                    url += `?startDate=${startDate}&endDate=${endDate}&mealType=${mealType}`;
-                }
-
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        displayMealCards(data);
-                        updateChart(data);
-                    })
-                    .catch(error => console.error("Error fetching meals:", error));
-            }
-
-            function displayMealCards(meals) {
-                mealCardsContainer.innerHTML = '';
-                meals.forEach(meal => {
-                    const card = document.createElement('div');
-                    card.classList.add('meal-card');
-                    card.innerHTML = `
-                        <img src="${meal.image}" alt="${meal.mealType}" class="meal-card-image">
-                        <div class="meal-card-content">
-                            <h3>${meal.mealType} - ${new Date(meal.mealDate).toLocaleDateString()}</h3>
-                            <p>${meal.description.substring(0, 50)}...</p>
-                        </div>
-                        <div class="meal-card-details">
-                            <p>Blood Sugar: ${meal.bloodSugar}</p>
-                            <p>Food Sugar: ${meal.foodSugar || 'N/A'}</p>
-                        </div>
-                    `;
-
-                    card.addEventListener('click', () => {
-                        const details = card.querySelector('.meal-card-details');
-                        details.style.display = details.style.display === 'block' ? 'none' : 'block';
-                    });
-
-                    mealCardsContainer.appendChild(card);
-                });
-            }
-
-            function updateChart(meals) {
-                const dates = meals.map(meal => new Date(meal.mealDate).toLocaleDateString());
-                const bloodSugarLevels = meals.map(meal => meal.bloodSugar);
-
-                if (chartInstance) {
-                    chartInstance.destroy();
-                }
-
-                chartInstance = new Chart(mealChart, {
-                    type: 'line',
-                    data: {
-                        labels: dates,
-                        datasets: [{
-                            label: 'Blood Sugar Levels',
-                            data: bloodSugarLevels,
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 2,
-                            fill: false
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        }
-                    }
-                });
-            }
-        });
-    </script>
+      document.addEventListener('DOMContentLoaded', function() {
+          const filterForm = document.getElementById('filter-form');
+          const viewAllButton = document.getElementById('view-all-history');
+          const mealChart = document.getElementById('mealChart').getContext('2d');
+          const showChartButton = document.getElementById('show-chart-button');
+          const chartContainer = document.querySelector('.chart-container');
+          const mealCardsContainer = document.querySelector('.meal-cards-container');
+          let chartInstance;
+  
+          // ברירת מחדל - מציגה את הארוחות בתצורת כרטיסיות
+          fetchMealHistory(true);
+  
+          // כאשר לוחצים על כפתור "Show Chart", הגרף יוצג והכרטיסיות יוסתרו
+          showChartButton.addEventListener('click', function() {
+              chartContainer.style.display = 'block'; // מציג את הגרף
+              mealCardsContainer.style.display = 'none'; // מסתיר את הכרטיסיות
+              fetchMealHistory(false); // מבצע קריאה לנתונים עבור הגרף
+          });
+  
+          // כאשר לוחצים על כפתור "View All Meals", תציג את הארוחות בתצורת כרטיסיות
+          viewAllButton.addEventListener('click', function() {
+              chartContainer.style.display = 'none'; // מסתיר את הגרף
+              mealCardsContainer.style.display = 'grid'; // מציג את הכרטיסיות
+              fetchMealHistory(true); // מבצע קריאה לנתונים עבור הכרטיסיות
+          });
+  
+          // שליחה של טופס פילטר
+          filterForm.addEventListener('submit', function(event) {
+              event.preventDefault();
+              fetchMealHistory();
+          });
+  
+          // פונקציה להורדת היסטוריית הארוחות
+          function fetchMealHistory(viewAll = false) {
+              let url = '/meals/history';
+              if (!viewAll) {
+                  const startDate = document.getElementById('start-date').value;
+                  const endDate = document.getElementById('end-date').value;
+                  const mealType = document.getElementById('meal-type').value;
+                  url += `?startDate=${startDate}&endDate=${endDate}&mealType=${mealType}`;
+              }
+  
+              fetch(url)
+                  .then(response => response.json())
+                  .then(data => {
+                      if (viewAll) {
+                          // מציגה את הארוחות בתצורת כרטיסיות
+                          displayMealCards(data);
+                          chartContainer.style.display = 'none'; // מסתיר את הגרף
+                          mealCardsContainer.style.display = 'grid'; // מציגה את הכרטיסיות
+                      } else {
+                          // מציגה את הגרף
+                          updateChart(data);
+                          chartContainer.style.display = 'block'; // מציגה את הגרף
+                          mealCardsContainer.style.display = 'none'; // מסתירה את הכרטיסיות
+                      }
+                  })
+                  .catch(error => console.error("Error fetching meals:", error));
+          }
+  
+          // פונקציה להציג את הארוחות בתצורת כרטיסיות
+          function displayMealCards(meals) {
+              mealCardsContainer.innerHTML = '';
+              meals.forEach(meal => {
+                  const card = document.createElement('div');
+                  card.classList.add('meal-card');
+                  card.innerHTML = `
+                      <img src="${meal.image}" alt="${meal.mealType}" class="meal-card-image">
+                      <div class="meal-card-content">
+                          <h3>${meal.mealType} - ${new Date(meal.mealDate).toLocaleDateString()}</h3>
+                          <p>${meal.description.substring(0, 50)}...</p>
+                      </div>
+                      <div class="meal-card-details">
+                          <p>Blood Sugar: ${meal.bloodSugar}</p>
+                          <p>Food Sugar: ${meal.foodSugar || 'N/A'}</p>
+                      </div>
+                  `;
+  
+                  card.addEventListener('click', () => {
+                      const details = card.querySelector('.meal-card-details');
+                      details.style.display = details.style.display === 'block' ? 'none' : 'block';
+                  });
+  
+                  mealCardsContainer.appendChild(card);
+              });
+          }
+  
+          // פונקציה לעדכון הגרף
+          function updateChart(meals) {
+              const dates = meals.map(meal => new Date(meal.mealDate).toLocaleDateString());
+              const bloodSugarLevels = meals.map(meal => meal.bloodSugar);
+  
+              if (chartInstance) {
+                  chartInstance.destroy(); // משמיד את הגרף הקודם
+              }
+  
+              chartInstance = new Chart(mealChart, {
+                  type: 'line',
+                  data: {
+                      labels: dates,
+                      datasets: [{
+                          label: 'Blood Sugar Levels',
+                          data: bloodSugarLevels,
+                          borderColor: 'rgba(75, 192, 192, 1)',
+                          borderWidth: 2,
+                          fill: false
+                      }]
+                  },
+                  options: {
+                      responsive: true,
+                      plugins: {
+                          legend: {
+                              display: false
+                          }
+                      }
+                  }
+              });
+          }
+      });
+  </script>
+  
 </body>
 </html>

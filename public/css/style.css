@@ -1131,9 +1131,9 @@ html {
 }
 
 #historyMealsPage #content {
-  max-width: 800px;
-  margin: 0 auto; /* מרכוז אופקי */
-  padding: 40px;
+  max-width: 1000px;
+  margin: 10 auto; /* מרכוז אופקי */
+  padding: 10px;
   color: #666;
   background: rgba(255, 255, 255, 0.8); /* רקע לבן שקוף מעט לאיזור התוכן */
   border-radius: 8px; /* מעגלים פינות */
