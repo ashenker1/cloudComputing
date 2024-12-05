@@ -20,7 +20,7 @@
 
                 <div class="view-options">
                     <button id="show-chart-button">Show Chart</button>
-                    <button id="view-all-history">View All Meals</button>
+                    <button id="view-all-meals">View All Meals</button>
                 </div>
 
                 <div class="assistance-text">
@@ -55,7 +55,7 @@
                     </div>
                 </form>
 
-                <div class="chart-container">
+                <div class="chart-container" style="display:none;">
                     <canvas id="mealChart"></canvas>
                 </div>
 
@@ -67,65 +67,67 @@
     <script>
       document.addEventListener('DOMContentLoaded', function() {
           const filterForm = document.getElementById('filter-form');
-          const viewAllButton = document.getElementById('view-all-history');
+          const viewAllMealsButton = document.getElementById('view-all-meals');
           const mealChart = document.getElementById('mealChart').getContext('2d');
           const showChartButton = document.getElementById('show-chart-button');
           const chartContainer = document.querySelector('.chart-container');
           const mealCardsContainer = document.querySelector('.meal-cards-container');
           let chartInstance;
+          let allMeals = []; // Store all meals
   
-          // ברירת מחדל - מציגה את הארוחות בתצורת כרטיסיות
-          fetchMealHistory(true);
+          // Fetch all meals on page load
+          fetchAllMeals();
   
-          // כאשר לוחצים על כפתור "Show Chart", הגרף יוצג והכרטיסיות יוסתרו
+          // When "Show Chart" is clicked, display the chart
           showChartButton.addEventListener('click', function() {
-              chartContainer.style.display = 'block'; // מציג את הגרף
-              mealCardsContainer.style.display = 'none'; // מסתיר את הכרטיסיות
-              fetchMealHistory(false); // מבצע קריאה לנתונים עבור הגרף
+              chartContainer.style.display = 'block';
+              mealCardsContainer.style.display = 'none';
+              updateChart(allMeals);
           });
   
-          // כאשר לוחצים על כפתור "View All Meals", תציג את הארוחות בתצורת כרטיסיות
-          viewAllButton.addEventListener('click', function() {
-              chartContainer.style.display = 'none'; // מסתיר את הגרף
-              mealCardsContainer.style.display = 'grid'; // מציג את הכרטיסיות
-              fetchMealHistory(true); // מבצע קריאה לנתונים עבור הכרטיסיות
+          // When "View All Meals" is clicked, show all meal cards
+          viewAllMealsButton.addEventListener('click', function() {
+              chartContainer.style.display = 'none';
+              mealCardsContainer.style.display = 'grid';
+              displayMealCards(allMeals);
           });
   
-          // שליחה של טופס פילטר
+          // Filter form submission
           filterForm.addEventListener('submit', function(event) {
               event.preventDefault();
-              fetchMealHistory();
+              const startDate = document.getElementById('start-date').value;
+              const endDate = document.getElementById('end-date').value;
+              const mealType = document.getElementById('meal-type').value;
+              fetchFilteredMeals(startDate, endDate, mealType);
           });
   
-          // פונקציה להורדת היסטוריית הארוחות
-          function fetchMealHistory(viewAll = false) {
-              let url = '/meals/history';
-              if (!viewAll) {
-                  const startDate = document.getElementById('start-date').value;
-                  const endDate = document.getElementById('end-date').value;
-                  const mealType = document.getElementById('meal-type').value;
-                  url += `?startDate=${startDate}&endDate=${endDate}&mealType=${mealType}`;
-              }
-  
-              fetch(url)
+          // Function to fetch all meals
+          function fetchAllMeals() {
+              fetch('/meals/history')
                   .then(response => response.json())
                   .then(data => {
-                      if (viewAll) {
-                          // מציגה את הארוחות בתצורת כרטיסיות
-                          displayMealCards(data);
-                          chartContainer.style.display = 'none'; // מסתיר את הגרף
-                          mealCardsContainer.style.display = 'grid'; // מציגה את הכרטיסיות
-                      } else {
-                          // מציגה את הגרף
-                          updateChart(data);
-                          chartContainer.style.display = 'block'; // מציגה את הגרף
-                          mealCardsContainer.style.display = 'none'; // מסתירה את הכרטיסיות
-                      }
+                      allMeals = data;
+                      displayMealCards(data);
+                      chartContainer.style.display = 'none';
+                      mealCardsContainer.style.display = 'grid';
                   })
                   .catch(error => console.error("Error fetching meals:", error));
           }
   
-          // פונקציה להציג את הארוחות בתצורת כרטיסיות
+          // Function to fetch filtered meals
+          function fetchFilteredMeals(startDate, endDate, mealType) {
+              const url = `/meals/history?startDate=${startDate}&endDate=${endDate}&mealType=${mealType}`;
+              fetch(url)
+                  .then(response => response.json())
+                  .then(data => {
+                      displayMealCards(data);
+                      chartContainer.style.display = 'none';
+                      mealCardsContainer.style.display = 'grid';
+                  })
+                  .catch(error => console.error("Error fetching filtered meals:", error));
+          }
+  
+          // Function to display meal cards
           function displayMealCards(meals) {
               mealCardsContainer.innerHTML = '';
               meals.forEach(meal => {
@@ -153,13 +155,13 @@
               });
           }
   
-          // פונקציה לעדכון הגרף
+          // Function to update chart
           function updateChart(meals) {
               const dates = meals.map(meal => new Date(meal.mealDate).toLocaleDateString());
               const bloodSugarLevels = meals.map(meal => meal.bloodSugar);
   
               if (chartInstance) {
-                  chartInstance.destroy(); // משמיד את הגרף הקודם
+                  chartInstance.destroy();
               }
   
               chartInstance = new Chart(mealChart, {
