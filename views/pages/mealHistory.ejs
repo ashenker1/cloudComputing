@@ -10,6 +10,7 @@
 <body id="historyMealsPage">
     <div id="page">
         <%- include('../partials/header') %>
+        <%- include('../partials/message')%>
         <div id="content">
             <div>
                 <h1>Meal History</h1>
@@ -139,6 +140,7 @@
                       <div class="meal-card-details">
                           <p>Blood Sugar: ${meal.bloodSugar}</p>
                           <p>Food Sugar: ${meal.foodSugar || 'N/A'}</p>
+                          <p>Holiday: ${meal.isHoliday ? 'Yes' : 'No'}</p>
                       </div>
                   `;
   
@@ -184,6 +186,5 @@
           }
       });
   </script>
-  
 </body>
 </html>

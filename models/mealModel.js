@@ -33,10 +33,9 @@ let addMealToDatabase = async (mealData, session) => {
 
     // בדוק את רמת הסוכר במזון
     const foodSugar = await checkSugarLevelFromDescription(description);
-
     // חיזוי רמת הסוכר אם לא ניתנה רמת סוכר
     let finalBloodSugar = bloodSugar; // אתחול עם רמת הסוכר הנתונה
-    if (!bloodSugar) {
+    if (!finalBloodSugar) {
       // בדוק אם קיימות ארוחות קודמות למשתמש
       const existingMealsQuery = await pool
         .request()
@@ -44,6 +43,8 @@ let addMealToDatabase = async (mealData, session) => {
         .query(`SELECT COUNT(*) AS mealCount FROM Meals WHERE userId = @userId`);
 
       const mealCount = existingMealsQuery.recordset[0].mealCount;
+      console.log("level 1");
+      console.log(mealCount);
       if (mealCount === 0) {
         return "Cannot predict blood sugar without prior meal data. Please enter your blood sugar level manually.";
       }

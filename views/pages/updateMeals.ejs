@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="/socket.io/socket.io.js"></script>
-    <title>Update Meal</title>
+    <title>Add Meal</title>
     <link rel="stylesheet" type="text/css" href="css/style.css" />
   </head>
   <body id="updateMealsPage">
@@ -12,7 +12,7 @@
       <%- include('../partials/header') %> <%- include('../partials/message') %>
       <div id="content">
         <div class="container">
-          <h2>Update Meal</h2>
+          <h2>Add Meal</h2>
           <form id="mealForm">
             <div class="form-group">
               <label for="mealType">Meal Type:</label>
@@ -51,7 +51,7 @@
             </div>
 
             <div class="button-container">
-              <button type="submit">Update Meal</button>
+              <button type="submit">Add Meal</button>
             </div>
           </form>
         </div>
@@ -78,7 +78,7 @@
           }
 
           try {
-            const response = await fetch("/meals/update", {
+            const response = await fetch("/meals/add", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
